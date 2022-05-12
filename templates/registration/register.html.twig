@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register{% endblock %}
+
+{% block body %}
+    {% for flash_error in app.flashes('verify_email_error') %}
+        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
+    {% endfor %}
+
+    <div id="register">
+    {{ form_start(registrationForm) }}
+        <table>
+            <caption class="center"><h1>Register</h1></caption>
+            <tr>
+                <td colspan="1">{{form_label(registrationForm.voornaam)}}</td>
+                <td colspan="1">
+                    {{form_errors(registrationForm.voornaam)}}<br>
+                    {{form_widget(registrationForm.voornaam)}}<br>
+                    {{form_help(registrationForm.voornaam)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(registrationForm.achternaam)}}</td>
+                <td colspan="1">
+                    {{form_errors(registrationForm.achternaam)}}<br>
+                    {{form_widget(registrationForm.achternaam)}}<br>
+                    {{form_help(registrationForm.achternaam)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(registrationForm.straat)}}&nbsp;&nbsp;</td>
+                <td colspan="1">
+                    {{form_errors(registrationForm.straat)}}<br>
+                    {{form_widget(registrationForm.straat)}}<br>
+                    {{form_help(registrationForm.straat)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(registrationForm.postcode)}}&nbsp;&nbsp;</td>
+                <td colspan="1">
+                    {{form_errors(registrationForm.postcode)}}<br>
+                    {{form_widget(registrationForm.postcode)}}<br>
+                    {{form_help(registrationForm.postcode)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(registrationForm.woonplaats)}}&nbsp;&nbsp;</td>
+                <td colspan="1">
+                    {{form_errors(registrationForm.woonplaats)}}<br>
+                    {{form_widget(registrationForm.woonplaats)}}<br>
+                    {{form_help(registrationForm.woonplaats)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(registrationForm.email)}}</td>
+                <td colspan="1">
+                    {{form_errors(registrationForm.email)}}<br>
+                    {{form_widget(registrationForm.email)}}<br>
+                    {{form_help(registrationForm.email)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(registrationForm.plainPassword)}}</td>
+                <td colspan="1">
+                    {{form_errors(registrationForm.plainPassword)}}<br>
+                    {{form_widget(registrationForm.plainPassword)}}<br>
+                    {{form_help(registrationForm.plainPassword)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(registrationForm.passwordCheck)}}</td>
+                <td colspan="1">
+                    {{form_errors(registrationForm.passwordCheck)}}<br>
+                    {{form_widget(registrationForm.passwordCheck)}}<br>
+                    {{form_help(registrationForm.passwordCheck)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="submit" class="btn">Register</button></td>
+            </tr>
+        </table>
+        <a href="{{path('app_login')}}">Login</a>
+        {# {{ form_row(registrationForm.agreeTerms) }} #}
+    {{ form_end(registrationForm) }}
+    </div>
+{% endblock %}
