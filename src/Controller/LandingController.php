@@ -35,19 +35,9 @@ class LandingController extends AbstractController
             ->to($user->getEmail())
             ->subject('Test Email')
             ->text('test');
-        if ($mailer->send($email)) {
-            $this->addFlash('info', 'mail send');
-            return $this->render('landing/index.html.twig', [
-                'controller_name' => 'LandingController',
-            ]);
-        } else {
-            $this->addFlash('error', `Mailer Error`);
-            return $this->render('landing/index.html.twig', [
-                'controller_name' => 'LandingController',
-            ]);
-        }
-
-
+        
+        $mailer->send($email);
+        return $this->redirectToRoute('app_landing');
 
         //$mail = new PHPMailer();
         //$mail->isSMTP();
