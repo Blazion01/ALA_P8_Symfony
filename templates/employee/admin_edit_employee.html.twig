@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Bewerk - Medewerker{% endblock %}
+
+{% block body %}
+    <div id="employeeForm" class="form">
+        {{ form_start(medewerkerForm) }}
+        <table>
+            <caption class="center"><h1>Bewerk medewerker account</h1></caption>
+            <tr>
+                <td colspan="1">{{form_label(medewerkerForm.voornaam)}}</td>
+                <td colspan="1">
+                    {{form_errors(medewerkerForm.voornaam)}}<br>
+                    {{form_widget(medewerkerForm.voornaam)}}<br>
+                    {{form_help(medewerkerForm.voornaam)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(medewerkerForm.achternaam)}}</td>
+                <td colspan="1">
+                    {{form_errors(medewerkerForm.achternaam)}}<br>
+                    {{form_widget(medewerkerForm.achternaam)}}<br>
+                    {{form_help(medewerkerForm.achternaam)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(medewerkerForm.functie)}}&nbsp;&nbsp;</td>
+                <td colspan="1">
+                    {{form_errors(medewerkerForm.functie)}}<br>
+                    {{form_widget(medewerkerForm.functie)}}<br>
+                    {{form_help(medewerkerForm.functie)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(medewerkerForm.telefoonnummer)}}&nbsp;&nbsp;</td>
+                <td colspan="1">
+                    {{form_errors(medewerkerForm.telefoonnummer)}}<br>
+                    {{form_widget(medewerkerForm.telefoonnummer)}}<br>
+                    {{form_help(medewerkerForm.telefoonnummer)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(medewerkerForm.email)}}</td>
+                <td colspan="1">
+                    {{form_errors(medewerkerForm.email)}}<br>
+                    {{form_widget(medewerkerForm.email)}}<br>
+                    {{form_help(medewerkerForm.email)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="submit" class="btn">Werk Medewerker Bij</button></td>
+            </tr>
+        </table>
+        {{ form_end(medewerkerForm) }}
+    </div>
+{% endblock %}

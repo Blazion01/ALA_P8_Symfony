@@ -35,6 +35,12 @@ class Medewerker implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'medewerker', targetEntity: Afspraak::class)]
     private $afspraaks;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $functie;
+
+    #[ORM\Column(type: 'integer')]
+    private $telefoonnummer;
+
     public function __construct()
     {
         $this->afspraaks = new ArrayCollection();
@@ -73,6 +79,10 @@ class Medewerker implements UserInterface, PasswordAuthenticatedUserInterface
     public function getRoles(): array
     {
         $roles = $this->roles;
+
+        $functionRole = "ROLE_";
+        $functionRole .= strtoupper($this->functie);
+        array_push($roles, $functionRole);
         // guarantee every user at least has ROLE_EMPLOYEE
         $roles[] = 'ROLE_EMPLOYEE';
 
@@ -160,6 +170,30 @@ class Medewerker implements UserInterface, PasswordAuthenticatedUserInterface
                 $afspraak->setMedewerker(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getFunctie(): ?string
+    {
+        return $this->functie;
+    }
+
+    public function setFunctie(string $functie): self
+    {
+        $this->functie = $functie;
+
+        return $this;
+    }
+
+    public function getTelefoonnummer(): ?int
+    {
+        return $this->telefoonnummer;
+    }
+
+    public function setTelefoonnummer(int $telefoonnummer): self
+    {
+        $this->telefoonnummer = $telefoonnummer;
 
         return $this;
     }

@@ -14,8 +14,33 @@
         {% endblock %}
     </head>
     <body>
+        <div id="banner" class="menu">
+            <img onclick="showMenu()" height="50px" src="{{asset('build/images/menu.png')}}" alt="menu" class="logo">
+            <a href="{{path('app_landing')}}">
+                <img height="50px" src="{{asset('build/images/logo/philomena.png')}}" alt="Philomena Logo" class="logo">
+            </a>
+        </div>
+
+        <div id="sidebar" class="menu">
+            <nav>
+                <ul>
+                    {% if is_granted('ROLE_CUSTOMER') %}
+                    <li><a href="{{path('app_customer_dashboard')}}">Home {% if is_granted('ROLE_EMPLOYEE') %}- Klant{% endif %}</a></li>
+                    {% endif %}
+                    {% if is_granted('ROLE_EMPLOYEE') %}
+                    <li><a href="{{path('app_employee_dashboard')}}">Home {% if is_granted('ROLE_CUSTOMER') %}- Medewerker{% endif %}</a></li>
+                    {% endif %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                    <li><a href="{{path('app_admin_dashboard')}}">Admin</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
 
         <div id="main">
+            {% block pre %}
+            {% endblock %}
+
             <div id="alerts">
             {% for label, messages in app.flashes %}
             {% for message in messages %}
@@ -28,5 +53,18 @@
             </div>
             {% block body %}{% endblock %}
         </div>
+        <script>
+            const showMenu = () => {
+                let sidebar = document.getElementById("sidebar");
+                if (sidebar.value == 1) {
+                    sidebar.style.left = `-50%`;
+                    sidebar.value = 0;
+                    return;
+                }
+                sidebar.style.left = '0';
+                sidebar.value = 1;
+                return;
+            }
+        </script>
     </body>
 </html>

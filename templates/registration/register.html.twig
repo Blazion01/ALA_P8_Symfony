@@ -52,6 +52,14 @@
                 </td>
             </tr>
             <tr>
+                <td colspan="1">{{form_label(registrationForm.telefoonnummer)}}&nbsp;&nbsp;</td>
+                <td colspan="1">
+                    {{form_errors(registrationForm.telefoonnummer)}}<br>
+                    {{form_widget(registrationForm.telefoonnummer)}}<br>
+                    {{form_help(registrationForm.telefoonnummer)}}
+                </td>
+            </tr>
+            <tr>
                 <td colspan="1">{{form_label(registrationForm.email)}}</td>
                 <td colspan="1">
                     {{form_errors(registrationForm.email)}}<br>

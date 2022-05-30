@@ -1,0 +1,54 @@
+{% extends 'employee/dashboard.html.twig' %}
+{% block pre %}{% endblock %}
+
+{% block title %}Admin{% endblock %}
+
+{% block admin %}
+<div id="admin">
+  <table>
+    <caption><h2>Employees: {{employees|length}}</h2></caption>
+    <tbody>
+      <tr>
+        <th>Is Admin</th>
+        <th>Naam</th>
+        <th>Email</th>
+        <th>Telefoonnummer</th>
+        <th>Functie</th>
+      </tr>
+      {% for employee in employees|sort((a, b) => a.functie <=> b.functie) %}
+      <tr>
+        <td>
+          {% if "ROLE_ADMIN" in employee.roles  %}
+          <p>&#10003</p>
+          {% endif %}
+          {% if "ROLE_OWNER" in employee.roles  %}
+          <p>&#10003</p>
+          {% endif %}
+        </td>
+        <td><p>{{employee.voornaam}}&nbsp;{{employee.achternaam}}</p></td>
+        <td><p>{{employee.email}}</p></td>
+        <td><p>
+          {% if employee.telefoonnummer %}
+          {{employee.telefoonnummer}}
+          {# {% set iterator = 0 %} #}
+          {# {% for number in employee.telefoonnummer %} #}
+          {# {{employee.telefoonnummer[ iterator ]}} #}
+          {# {% if iterator in [0, 2, 4, 6] %} #}
+          {# <span class="tel-spacing"></span> #}
+          {# {% endif %} #}
+          {# {% set iterator = iterator + 1 %} #}
+          {# {% endfor %} #}
+          {# {% else %} #}
+          {# n.v.t. #}
+          {% endif %}
+        </p></td>
+        <td><p>{{employee.functie}}</p></td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td colspan="5"><a href="{{path('app_create_employee')}}">Voeg medewerker toe</a></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

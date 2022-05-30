@@ -4,7 +4,7 @@
 
 {% block body %}
 <img class="logo" src="{{asset('build/images/logo/philomena-logo-diap.png')}}" alt="Philomena Logo" width="200px">
-<form method="post">
+<form id="login" method="post">
     {% if error %}
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
@@ -15,7 +15,7 @@
         </div>
     {% endif %}
 
-    <div id="login">
+    <div>
         <h1>Inloggen</h1>
         <input placeholder="myname@mail.com" type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus><br>
         <input placeholder="wachtwoord" type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>

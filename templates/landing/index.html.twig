@@ -6,10 +6,10 @@
 <div id="landing">
     {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
         {% if is_granted('ROLE_CUSTOMER') %}
-        <a href="{{path('app_logout')}}">Logout</a><br>
+        {% if is_granted('ROLE_EMPLOYEE') %}main firewall {% endif %}<a href="{{path('app_logout')}}">Logout</a><br>
         {% endif %}
         {% if is_granted('ROLE_EMPLOYEE') %}
-        <a href="{{path('app_logout_employee')}}">Employee Logout</a><br>
+        {% if is_granted('ROLE_CUSTOMER') %}company firewall {% endif %}<a href="{{path('app_logout_employee')}}">Logout</a><br>
         {% endif %}
     {% else %}
     <a href="{{path('app_login')}}">Klanten Portaal</a><br>

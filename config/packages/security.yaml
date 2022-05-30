@@ -37,14 +37,8 @@ security:
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
         company:
-            pattern: ^/employee
+            pattern: ^*/employee/*
             lazy: true
             provider: app_employee_provider
             custom_authenticator: App\Security\MedewerkerAuthenticator
@@ -57,6 +51,12 @@ security:
                 secret: '%kernel.secret%'
                 lifetime: 604800
 
+            # activate different ways to authenticate
+            # https://symfony.com/doc/current/security.html#the-firewall
+
+            # https://symfony.com/doc/current/security/impersonating_user.html
+            # switch_user: true
+
     role_hierarchy:
         ROLE_DEV: [ROLE_OWNER, ROLE_CUSTOMER]
         ROLE_OWNER: ROLE_ADMIN
@@ -65,12 +65,12 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/employee, roles: ROLE_EMPLOYEE }
-        - { path: ^/customer, roles: ROLE_CUSTOMER }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         - { path: ^/logout, roles: PUBLIC_ACCESS }
         - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/admin, roles: ROLE_ADMIN }
+        - { path: ^/employee, roles: ROLE_EMPLOYEE }
+        - { path: ^/customer, roles: ROLE_CUSTOMER }
 
 when@test:
     security:

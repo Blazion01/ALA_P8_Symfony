@@ -49,6 +49,9 @@ class Klant implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'klant', targetEntity: Afspraak::class, orphanRemoval: true)]
     private $afspraaks;
 
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private $telefoonnummer;
+
     public function __construct()
     {
         $this->afspraaks = new ArrayCollection();
@@ -222,6 +225,18 @@ class Klant implements UserInterface, PasswordAuthenticatedUserInterface
                 $afspraak->setKlant(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTelefoonnummer(): ?int
+    {
+        return $this->telefoonnummer;
+    }
+
+    public function setTelefoonnummer(?int $telefoonnummer): self
+    {
+        $this->telefoonnummer = $telefoonnummer;
 
         return $this;
     }

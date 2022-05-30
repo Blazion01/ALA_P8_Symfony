@@ -2,63 +2,47 @@
 
 namespace App\Form;
 
-use App\Entity\Klant;
+use App\Entity\Medewerker;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TelType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\IsTrue;
-use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
-class RegistrationFormType extends AbstractType
+class AdminType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('email', EmailType::class, [
-                'label' => 'email*',
-            ])
-            //->add('agreeTerms', CheckboxType::class, [
-            //    'mapped' => false,
-            //    'constraints' => [
-            //        new IsTrue([
-            //            'message' => 'You should agree to our terms.',
-            //        ]),
-            //    ],
-            //])
             ->add('voornaam', TextType::class, [
                 'label' => 'voornaam*',
             ])
             ->add('achternaam', TextType::class, [
                 'label' => 'achternaam*',
             ])
-            ->add('straat', TextType::class, [
-                'label' => 'straat',
-                'required' => false,
-            ])
-            ->add('postcode', TextType::class, [
-                'label' => 'postcode',
-                'required' => false,
-            ])
-            ->add('woonplaats', TextType::class, [
-                'label' => 'woonplaats',
-                'required' => false,
+            ->add('functie', ChoiceType::class, [
+                'choices' => [
+                    'Nagelstylist' => 'Nagelstylist',
+                    'Kapper' => 'Kapper'
+                ],
+                'placeholder' => 'Choose an option',
+                'label' => 'functie*'
             ])
             ->add('telefoonnummer', TelType::class, [
-                'label' => 'telefoonnummer',
-                'required' => false,
+                'label' => 'telefoonnummer*',
             ])
-            ->add('plainPassword', PasswordType::class, [
+            ->add('email', EmailType::class, [
+                'label' => 'email*',
+            ])
+            ->add('password', PasswordType::class, [
                 // instead of being set onto the object directly,
                 // this is read and encoded in the controller
                 'mapped' => false,
                 'label' => 'wachtwoord*',
-                'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
                     new NotBlank([
                         'message' => 'Please enter a password',
@@ -80,13 +64,22 @@ class RegistrationFormType extends AbstractType
                     ])
                 ],
             ])
+            ->add('admin', ChoiceType::class, [
+                'mapped' => false,
+                'choices' => [
+                    'Ja' => true,
+                    'Nee' => false
+                ],
+                'expanded' => true,
+                'label' => 'Heeft admin privileges'
+            ])
         ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Klant::class,
+            'data_class' => Medewerker::class,
         ]);
     }
 }
