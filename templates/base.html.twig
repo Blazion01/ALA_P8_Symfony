@@ -33,6 +33,9 @@
                     {% if is_granted('ROLE_ADMIN') %}
                     <li><a href="{{path('app_admin_dashboard')}}">Admin</a></li>
                     {% endif %}
+                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <li><a href="{{path('app_logout')}}">Logout</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </div>

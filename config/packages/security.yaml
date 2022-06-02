@@ -20,6 +20,9 @@ security:
             entity:
                 class: App\Entity\Medewerker
                 property: email
+        all_users:
+            chain:
+                providers: ['app_employee_provider', 'app_customer_provider']
         # used to reload user from session & other features (e.g. switch_user)
     firewalls:
         dev:
@@ -27,24 +30,47 @@ security:
             security: false
         main:
             lazy: true
-            provider: app_customer_provider
-            custom_authenticator: App\Security\KlantAuthenticator
-            access_denied_url: ^/login
+            provider: all_users
+            custom_authenticator: 
+                - App\Security\MedewerkerAuthenticator
+                - App\Security\CustomerAuthenticator
+                - App\Security\KlantAuthenticator
+            entry_point: App\Security\MedewerkerAuthenticator
             logout:
                 path: app_logout
-                # where to redirect after logout
                 target: app_landing
             remember_me:
                 secret: '%kernel.secret%'
                 lifetime: 604800
         company:
-            pattern: ^*/employee/*
-            lazy: true
+            pattern: ^/employee
+            lazy: false
             provider: app_employee_provider
             custom_authenticator: App\Security\MedewerkerAuthenticator
-            access_denied_url: ^/login/employee
+            form_login: 
+                login_path: app_login_employee
+                check_path: app_login_employee
+            entry_point: App\Security\MedewerkerAuthenticator
             logout:
                 path: app_logout_employee
+                # where to redirect after logout
+                target: app_landing
+            remember_me:
+                secret: '%kernel.secret%'
+                lifetime: 604800
+        customer:
+            pattern: ^/customer
+            lazy: false
+            provider: app_customer_provider
+            custom_authenticator: 
+                - App\Security\CustomerAuthenticator
+                - App\Security\KlantAuthenticator
+            # form_login: 
+                # login_path: app_login
+                # check_path: app_login
+            entry_point: App\Security\KlantAuthenticator
+            logout:
+                path: app_logout
                 # where to redirect after logout
                 target: app_landing
             remember_me:
@@ -70,6 +96,7 @@ security:
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/employee, roles: ROLE_EMPLOYEE }
+        - { path: ^/customer/dashboard, roles: PUBLIC_ACCESS }
         - { path: ^/customer, roles: ROLE_CUSTOMER }
 
 when@test:

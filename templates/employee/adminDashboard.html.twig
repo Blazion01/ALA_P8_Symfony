@@ -14,6 +14,8 @@
         <th>Email</th>
         <th>Telefoonnummer</th>
         <th>Functie</th>
+        <th></th>
+        <th></th>
       </tr>
       {% for employee in employees|sort((a, b) => a.functie <=> b.functie) %}
       <tr>
@@ -43,10 +45,20 @@
           {% endif %}
         </p></td>
         <td><p>{{employee.functie}}</p></td>
+        <td>
+          {% if employee.edit %}
+          <a href="{{path('app_edit_employee', {'id': employee.id})}}">Bewerk</a>
+          {% endif %}
+        </td>
+        <td>
+          {% if employee.remove %}
+          <a href="{{path('app_confirm_delete', {'entity': 'employee', 'id': employee.id})}}">Verwijder</a>
+          {% endif %}
+        </td>
       </tr>
       {% endfor %}
       <tr>
-        <td colspan="5"><a href="{{path('app_create_employee')}}">Voeg medewerker toe</a></td>
+        <td colspan="7"><a href="{{path('app_create_employee')}}">Voeg medewerker toe</a></td>
       </tr>
     </tbody>
   </table>

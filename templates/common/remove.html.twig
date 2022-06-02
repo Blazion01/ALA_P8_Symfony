@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Remove{% endblock %}
+
+{% block body %}
+    <div id="remove">
+        <h1>Are You Sure?</h1>
+
+        {{ form_start(removeForm) }}
+            <table>
+                <tr>
+                    <td>{{ form_label(removeForm.Remove) }}</td>
+                    <td>{{ form_errors(removeForm.Remove) }}<br>{{ form_widget(removeForm.Remove) }}<br>{{ form_help(removeForm.Remove) }}</td>
+                </tr>
+                <tr>
+                    <td colspan="2"><button type="submit" class="btn btn-lg btn-primary">Remove {{ entity }}</button></td>
+                </tr>
+            </table>
+        {{ form_end(removeForm) }}
+    </div>
+{% endblock %}

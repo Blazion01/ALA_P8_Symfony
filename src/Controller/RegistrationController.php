@@ -67,6 +67,7 @@ class RegistrationController extends AbstractController
             $this->addFlash('error', 'wachtwoorden kwamen niet overeen');
         }
 
+        $this->addFlash('info', 'als u een medewerker account hebt gebruik een andere email');
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form->createView(),
         ]);

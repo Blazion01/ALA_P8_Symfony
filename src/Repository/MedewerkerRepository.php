@@ -112,7 +112,7 @@ class MedewerkerRepository extends ServiceEntityRepository implements PasswordUp
     }
 
     /**
-     * @param string|null $value
+     * @param int|null $val
      */
     public function findAllExcept($val)
     {
@@ -123,7 +123,7 @@ class MedewerkerRepository extends ServiceEntityRepository implements PasswordUp
     }
 
     /**
-     * @param string|null $value
+     * @param string|null $val
      */
     public function getUniqueValues($col)
     {

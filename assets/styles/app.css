@@ -214,6 +214,23 @@ a:hover {
   height: fit-content;
 }
 
+#employeeForm, #remove, #remove form, #remove table {
+  margin: 10px auto;
+  width: fit-content;
+}
+
+#employeeForm tr td:first-child {
+  text-align: right;
+}
+
+#remove, #remove form, #remove table, #employeeForm, #employeeForm select, #employeeForm input, #employeeForm tr:last-child td {
+  text-align: center;
+}
+
+/* #remove form, #remove table { */
+  /* width: 100%; */
+/* } */
+
 /* Laptop */
 @media screen 
   and (min-device-width: 1200px)

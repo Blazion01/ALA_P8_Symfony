@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Mime\Address;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -12,6 +13,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\MedewerkerRepository;
+use App\Form\RemoveFormType;
 
 class LandingController extends AbstractController
 {
@@ -27,7 +29,17 @@ class LandingController extends AbstractController
     #[Route('/', name: 'app_landing')]
     public function index(): Response
     {
-        return $this->redirectToRoute('app_login');
+        if ($this->getUser()) {
+            if (
+                $this->security->isGranted('ROLE_DEV') ||
+                $this->security->isGranted('ROLE_OWNER') ||
+                $this->security->isGranted('ROLE_ADMIN') ||
+                $this->security->isGranted('ROLE_EMPLOYEE')
+            ) return $this->redirectToRoute('app_employee_dashboard');
+            if ($this->security->isGranted('ROLE_CUSTOMER')) return $this->redirectToRoute('app_customer_dashboard');
+        }
+
+        return $this->redirectToRoute('app_customer_dashboard');
         return $this->render('landing/index.html.twig', [
             'controller_name' => 'LandingController',
         ]);
@@ -52,17 +64,18 @@ class LandingController extends AbstractController
         return $this->redirectToRoute('app_landing');
     }
 
-    #[Route('/delete/{entity}/{id}')]
+    #[Route('/delete/{entity}/{id}', name: 'app_confirm_delete')]
     /* 
      * @param $entity
      * @param $id
      */
-    public function remove($entity = null, $id = null, EntityManagerInterface $entityManager, MedewerkerRepository $MR) {
+    public function remove($entity = null, $id = null, EntityManagerInterface $entityManager, MedewerkerRepository $MR, Request $request) {
         if (!$entity) {
             return $this->redirectToRoute('app_landing');
         }
 
         $form = $this->createForm(RemoveFormType::class);
+        $form->handleRequest($request);
 
         switch ($entity) {
             case 'employee':
@@ -75,9 +88,14 @@ class LandingController extends AbstractController
                     $this->addFlash('error', 'Entiteit of type \''.$entity.'\' met id \''.$id.'\' bestaat niet.');
                     return $this->redirectToRoute('app_admin_dashboard');
                 }
-                if (in_array("ROLE_ADMIN", $MRresult->getRoles() && !$this->security->isGranted('ROLE_OWNER'))) {
-                    $this->addFlash('error', 'U kan geen admins verwijderen.');
-                    return $this->redirectToRoute('app_admin_dashboard');
+                var_dump($MRresult->getRoles());
+                foreach ($MRresult->getRoles() as $role) {
+                    if ("ROLE_ADMIN" == $role) {
+                        if (!$this->security->isGranted('ROLE_OWNER')) {
+                            $this->addFlash('error', 'U kan geen admins verwijderen.');
+                            return $this->redirectToRoute('app_admin_dashboard');
+                        }
+                    }
                 }
                 if ($form->isSubmitted() && $form->isValid()) {
                     if (!$form->get('Remove')->getData()) {
@@ -90,9 +108,11 @@ class LandingController extends AbstractController
                 break;
             
             default:
-                $this->addFlash('error', 'Entiteit of type: '.$entity.'kan niet verwijderd worden.');
+                $this->addFlash('error', 'Entiteit of type: \''.$entity.'\' kan niet verwijderd worden.');
                 return $this->redirectToRoute('app_landing');
                 break;
         }
+
+        return $this->render('common/remove.html.twig', ['removeForm' => $form->createView(), 'entity' => $entity]);
     }
 }

@@ -6,7 +6,7 @@
     <div id="employeeForm" class="form">
         {{ form_start(medewerkerForm) }}
         <table>
-            <caption class="center"><h1>Bewerk medewerker account</h1></caption>
+            <caption class="center"><h1>Bewerk {% if ownAccount != true %}medewerker {% endif %} account</h1></caption>
             <tr>
                 <td colspan="1">{{form_label(medewerkerForm.voornaam)}}</td>
                 <td colspan="1">
