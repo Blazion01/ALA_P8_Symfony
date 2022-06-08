@@ -223,7 +223,7 @@ a:hover {
   text-align: right;
 }
 
-#remove, #remove form, #remove table, #employeeForm, #employeeForm select, #employeeForm input, #employeeForm tr:last-child td {
+#remove, #remove form, #remove table, #employeeForm, #employeeForm select, #employeeForm input, #employeeForm tr td[colspan="2"] {
   text-align: center;
 }
 

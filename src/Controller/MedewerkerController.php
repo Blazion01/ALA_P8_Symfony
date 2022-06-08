@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use App\Repository\MedewerkerRepository;
+use App\Repository\WerkurenRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
@@ -14,8 +15,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\Security;
+use App\Entity\Werkuren;
 use App\Entity\Medewerker;
 use App\Form\MedewerkerType;
+use App\Form\WorkhoursFormType;
 use App\Form\MedewerkerEditType;
 
 class MedewerkerController extends AbstractController
@@ -93,6 +96,30 @@ class MedewerkerController extends AbstractController
 
         return $this->render('employee/adminDashboard.html.twig', [
             'employees' => $employees,
+        ]);
+    }
+
+    #[Route('/employee/hours', name: 'app_employee_hours')]
+    public function hoursForm(EntityManagerInterface $entityManager, WerkurenRepository $WR, Request $request): Response
+    {
+        $hours = new Werkuren();
+        if($this->getUser()->getWerkuren()) {
+            $hours = $this->getUser()->getWerkuren();
+        }
+        $form = $this->createForm(WorkhoursFormType::class, $hours);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if(!$this->getUser()->getWerkuren())
+            $this->getUser()->setWerkuren($hours);
+
+            $entityManager->flush();
+            $this->addFlash('success', 'werkuren bijgewerkt');
+            return $this->redirectToRoute('app_employee_dashboard');
+        }
+
+        return $this->render('employee/workhours_form.html.twig', [
+            'werkurenForm' => $form->createView(),
         ]);
     }
 

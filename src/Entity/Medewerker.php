@@ -41,6 +41,9 @@ class Medewerker implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'integer')]
     private $telefoonnummer;
 
+    #[ORM\OneToOne(mappedBy: 'Medewerker', targetEntity: Werkuren::class, cascade: ['persist', 'remove'])]
+    private $werkuren;
+
     public function __construct()
     {
         $this->afspraaks = new ArrayCollection();
@@ -194,6 +197,23 @@ class Medewerker implements UserInterface, PasswordAuthenticatedUserInterface
     public function setTelefoonnummer(int $telefoonnummer): self
     {
         $this->telefoonnummer = $telefoonnummer;
+
+        return $this;
+    }
+
+    public function getWerkuren(): ?Werkuren
+    {
+        return $this->werkuren;
+    }
+
+    public function setWerkuren(Werkuren $werkuren): self
+    {
+        // set the owning side of the relation if necessary
+        if ($werkuren->getMedewerker() !== $this) {
+            $werkuren->setMedewerker($this);
+        }
+
+        $this->werkuren = $werkuren;
 
         return $this;
     }

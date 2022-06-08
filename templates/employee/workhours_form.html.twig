@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vul werkuren in.{% endblock %}
+
+{% block body %}
+<div id="werkuren">
+  {{form_start(werkurenForm)}}
+  {{form_row(werkurenForm.hours)}}
+  <button type="submit" class="btn">Stel uren vast</button>
+  {{form_end(werkurenForm)}}
+</div>
+{% endblock %}
