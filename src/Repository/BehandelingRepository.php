@@ -75,4 +75,20 @@ class BehandelingRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function countRows()
+    {
+        return $this->createQueryBuilder('b')
+            ->select('COUNT(b.id) as totalRows')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    /* 
+     * @param string|null $term
+     */
+    public function orderSearch(?string $term): QueryBuilder
+    {
+
+    }
 }

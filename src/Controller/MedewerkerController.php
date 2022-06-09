@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use App\Repository\MedewerkerRepository;
+use App\Repository\BehandelingRepository;
 use App\Repository\WerkurenRepository;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mime\Address;
@@ -17,9 +18,12 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\Security;
 use App\Entity\Werkuren;
 use App\Entity\Medewerker;
+use App\Entity\Behandeling;
 use App\Form\MedewerkerType;
+use App\Form\BehandelingFormType;
 use App\Form\WorkhoursFormType;
 use App\Form\MedewerkerEditType;
+use Knp\Component\Pager\PaginatorInterface;
 
 class MedewerkerController extends AbstractController
 {
@@ -61,7 +65,7 @@ class MedewerkerController extends AbstractController
     }
 
     #[Route('/employee/admin', name: 'app_admin_dashboard')]
-    public function adminDashboard(MedewerkerRepository $MR): Response
+    public function adminDashboard(MedewerkerRepository $MR, BehandelingRepository $BR, PaginatorInterface $paginator): Response
     {
         $temp = $MR->findAll();
         $employees = [];
@@ -94,8 +98,28 @@ class MedewerkerController extends AbstractController
             array_push($employees, $employeeTemp);
         }
 
+        $temp = $BR->findAll();
+        // $BPager = $paginator->paginate(
+        //     $temp,
+        //     $request->query->getInt('BPage', 1),
+        //     10
+        // );
+        $behandelingen = [];
+        foreach ($temp as $behandeling) {
+            $behandelingTemp["id"] = $behandeling->getId();
+            $behandelingTemp["type"] = $behandeling->getType();
+            $behandelingTemp["groep"] = $behandeling->getGroep();
+            $behandelingTemp["naam"] = $behandeling->getNaam();
+            $behandelingTemp["prijs"] = $behandeling->getPrijs();
+            $behandelingTemp["edit"] = true;
+            $behandelingTemp["remove"] = false;
+
+            array_push($behandelingen, $behandelingTemp);
+        }
+        
         return $this->render('employee/adminDashboard.html.twig', [
             'employees' => $employees,
+            'behandelingen' => $behandelingen,
         ]);
     }
 
@@ -124,11 +148,8 @@ class MedewerkerController extends AbstractController
     }
 
     #[Route('/employee/create', name: 'app_create_employee')]
-    #[Route('/employee/edit/{id}', name: 'app_edit_employee')]
-    /* 
-     * @param $id
-     */
-    public function register($id = 0, Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, MedewerkerRepository $MR): Response
+    #[Route('/employee/edit/{id}', name: 'app_edit_employee', requirements: ['id' => '\d+'])]
+    public function register(int $id = null, Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, MedewerkerRepository $MR): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
     
@@ -235,6 +256,39 @@ class MedewerkerController extends AbstractController
         return $this->render('employee/admin_edit_employee.html.twig', [
             'medewerkerForm' => $form->createView(),
             'ownAccount' => $ownAccount,
+        ]);
+    }
+
+    #[Route('/employee/behandeling/create', name: 'app_create_behandeling')]
+    #[Route('/employee/behandeling/edit/{id}', name: 'app_edit_behandeling', requirements: ['id' => '\d+'])]
+    public function addBehandeling(int $id = null, Request $request, EntityManagerInterface $entityManager, BehandelingRepository $BR): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+    
+        $edit = false;
+        if ($id != 0 && $BR->find($id)) {
+            $behandeling = $BR->find($id);
+            $form = $this->createForm(BehandelingFormType::class, $behandeling);
+            $edit = true;
+        } else {
+            $behandeling = new Behandeling();
+            $form = $this->createForm(BehandelingFormType::class, $behandeling);
+            $form->get('type')->setData($BR->countRows() + 1);
+        }
+        $form->handleRequest($request);
+    
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($behandeling);
+            $entityManager->flush();
+
+            if ($id != 0) $this->addFlash('info', 'behandeling succesvol bijgewerkt.');
+            if ($id == 0) $this->addFlash('info', 'behandeling succesvol aangemaakt.');
+            return $this->redirectToRoute("app_admin_dashboard");
+        }
+    
+        return $this->render('employee/behandeling_create.html.twig', [
+            'behandelingForm' => $form->createView(),
+            'edit' => $edit
         ]);
     }
 }

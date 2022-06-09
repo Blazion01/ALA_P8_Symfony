@@ -1,13 +1,13 @@
-{% extends 'employee/dashboard.html.twig' %}
+{% extends 'base.html.twig' %}
 {% block pre %}{% endblock %}
 
 {% block title %}Admin{% endblock %}
 
-{% block admin %}
+{% block body %}
 <div id="admin">
   <table>
-    <caption><h2>Employees: {{employees|length}}</h2></caption>
-    <tbody>
+    <caption onclick="change('employees', 'employeeCount');"><h2 style="width: 170px;">Employees: {{employees|length}}</h2><p id="employeeCount"><strong>^</strong></p></caption>
+    <tbody id="employees" style="display: none;">
       <tr>
         <th>Is Admin</th>
         <th>Naam</th>
@@ -62,5 +62,58 @@
       </tr>
     </tbody>
   </table>
+  
+  <table>
+    <caption onclick="change('behandelingen', 'behandelingCount')"><h2 style="width: 230px;">Behandelingen: {{behandelingen|length}}</h2><p id="behandelingCount"><strong>^</strong></p></caption>
+    <tbody id="behandelingen" style="display: none;">
+      <tr>
+        <th>Type</th>
+        <th>Groep</th>
+        <th>Naam</th>
+        <th>Prijs</th>
+        <th></th>
+        <th></th>
+      </tr>
+      {% for behandeling in behandelingen|sort((a, b) => a.groep <=> b.groep) %}
+      <tr>
+        <td><p>{{behandeling.type}}</p></td>
+        <td><p>{{behandeling.groep}}</p></td>
+        <td><p>{{behandeling.naam}}</p></td>
+        <td><p>€{{behandeling.prijs}}</p></td>
+        <td>
+          {% if behandeling.edit %}
+          <a href="{{path('app_edit_behandeling', {'id': behandeling.id})}}">Bewerk</a>
+          {% endif %}
+        </td>
+        <td>
+          {% if behandeling.remove %}
+          <a href="{{path('app_confirm_delete', {'entity': 'behandeling', 'id': behandeling.id})}}">Verwijder</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+      <tr>
+        <td colspan="7"><a href="{{path('app_create_behandeling')}}">Voeg behandeling toe</a></td>
+      </tr>
+    </tbody>
+  </table>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+  const change = (id, idTwo) => {
+    let tbl = document.getElementById(id);
+    var tblc = document.getElementById(idTwo);
+    if (tbl.style.display == "none") {
+      tbl.style.display = "table-row-group";
+    tblc.style.transform = "rotate(0deg) translateY(-20px)";
+    } else {
+      tbl.style.display = "none";
+    tblc.style.transform = "rotate(180deg) translateY(20px)";
+    }
+    console.log(tbl);
+    console.log("\u2304");
+  }
+</script>
 {% endblock %}

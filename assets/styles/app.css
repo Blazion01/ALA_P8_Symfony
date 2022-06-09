@@ -186,6 +186,14 @@ a:hover {
   text-align: center;
 }
 
+#admin table {
+  background-color: #fff;
+}
+
+#admin caption p {
+  transform: rotate(180deg) translateY(20px);
+}
+
 #admin p {
   margin: 0;
 }
@@ -210,8 +218,8 @@ a:hover {
 }
 
 #admin tbody {
+  overflow: hidden;
   max-height: 200px;
-  height: fit-content;
 }
 
 #employeeForm, #remove, #remove form, #remove table {

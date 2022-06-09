@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Maak - Behandeling{% endblock %}
+
+{% block body %}
+    <div id="behandelingForm" class="form">
+        {{ form_start(behandelingForm) }}
+        <table>
+            <caption class="center"><h1>Maak Behandeling</h1></caption>
+            <tr>
+                <td colspan="1">{{form_label(behandelingForm.type)}}*</td>
+                <td colspan="1">
+                    {{form_errors(behandelingForm.type)}}<br>
+                    {{form_widget(behandelingForm.type)}}<br>
+                    {{form_help(behandelingForm.type)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(behandelingForm.groep)}}*</td>
+                <td colspan="1">
+                    {{form_errors(behandelingForm.groep)}}<br>
+                    {{form_widget(behandelingForm.groep)}}<br>
+                    {{form_help(behandelingForm.groep)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(behandelingForm.naam)}}*</td>
+                <td colspan="1">
+                    {{form_errors(behandelingForm.naam)}}<br>
+                    {{form_widget(behandelingForm.naam)}}<br>
+                    {{form_help(behandelingForm.naam)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="1">{{form_label(behandelingForm.prijs)}}*</td>
+                <td colspan="1">
+                    {{form_errors(behandelingForm.prijs)}}<br>
+                    {{form_widget(behandelingForm.prijs)}}<br>
+                    {{form_help(behandelingForm.prijs)}}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2"><button type="submit" class="btn">{% if edit == false %}Voeg Behandeling Toe{% else %}Werk Behandeling Bij{% endif %}</button></td>
+            </tr>
+        </table>
+        {{ form_end(behandelingForm) }}
+    </div>
+{% endblock %}

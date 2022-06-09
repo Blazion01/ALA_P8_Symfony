@@ -16,6 +16,12 @@ class Behandeling
     #[ORM\Column(type: 'integer')]
     private $type;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    private $groep;
+
+    #[ORM\Column(type: 'string', length: 255)]
+    private $naam;
+
     #[ORM\Column(type: 'decimal', precision: 4, scale: 2)]
     private $prijs;
 
@@ -32,6 +38,30 @@ class Behandeling
     public function setType(int $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getGroep(): ?string
+    {
+        return $this->groep;
+    }
+
+    public function setGroep(string $groep): self
+    {
+        $this->groep = $groep;
+
+        return $this;
+    }
+
+    public function getNaam(): ?string
+    {
+        return $this->naam;
+    }
+
+    public function setNaam(string $naam): self
+    {
+        $this->naam = $naam;
 
         return $this;
     }
