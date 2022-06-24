@@ -6,6 +6,25 @@
 <div class="employee dashboard">
   <div id="redirect">
     <a href="{{path('app_employee_hours')}}">Stel Werkuren Vast</a>
+    {% if shifts|length > 0 %}
+    <table>
+      {% for shift in shifts %}
+      <tr>
+        {% set dag = shift|slice(0,2)%}
+        {% set tijd = shift|slice(3,5) %}
+        {% if shift|length == 12 %}
+          {% set tijd = shift|slice(3,8) %}
+        {% endif %}
+        {% if shift|length == 11 %}
+          {% set tijd = shift|slice(3,7) %}
+        {% endif %}
+        <th>{{dag}}</th>
+        <td>{{tijd}}</td>
+      </tr>
+      {% endfor %}
+    </table>
+    {% endif %}
+    
   </div>
 </div>
 {% block admin %}

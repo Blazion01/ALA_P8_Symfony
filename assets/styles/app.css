@@ -48,7 +48,8 @@ body {
   transition-duration: 1500ms;
 }
 
-#sidebar nav a, #sidebar nav a:visited {
+#sidebar nav a,
+#sidebar nav a:visited {
   text-decoration: none;
   font-weight: 700;
   color: #fff;
@@ -84,6 +85,10 @@ body {
   text-align: center;
 }
 
+.disabled {
+  display: none;
+}
+
 span.tel-spacing {
   margin-right: 2.5px;
   height: 100%;
@@ -94,7 +99,9 @@ form {
   width: fit-content;
 }
 
-h1,h2,h3 {
+h1,
+h2,
+h3 {
   font-family: 'Rubik', sans-serif;
 }
 
@@ -108,16 +115,23 @@ a:hover {
 
 #main {
   position: relative;
-  transform: translateY(65px);
+  transform: translateY(60px);
   z-index: 4;
 }
 
-#main .logo, #login, #landing, #register, #admin, #admin table {
+#main .logo,
+#login,
+#landing,
+#register,
+#admin,
+#admin table {
   margin-left: 50%;
   transform: translateX(-50%);
 }
 
-#login, #landing, #register {
+#login,
+#landing,
+#register {
   text-align: center;
   width: fit-content;
   height: fit-content;
@@ -132,14 +146,15 @@ a:hover {
 }
 
 /* #login h1 { */
-  /* text-align: left; */
+/* text-align: left; */
 /* } */
 
 #login input {
   text-align: center;
 }
 
-#login input[type="email"], #login input[type="password"] {
+#login input[type="email"],
+#login input[type="password"] {
   height: 25px;
   width: 250px;
   border: 2.5px solid #000;
@@ -147,7 +162,8 @@ a:hover {
   margin-bottom: 5px;
 }
 
-#login button[type="submit"], #register button[type="submit"] {
+#login button[type="submit"],
+#register button[type="submit"] {
   width: 270px;
   height: 35px;
   border-radius: 25px;
@@ -190,30 +206,37 @@ a:hover {
   background-color: #fff;
 }
 
-#admin caption p {
+#admin caption p,
+div.customer.dashboard #afspraken div.show p {
   transform: rotate(180deg) translateY(20px);
+  transition-property: transform;
+  transition-duration: 2000ms;
 }
 
 #admin p {
   margin: 0;
 }
 
-#admin caption, #admin h2 {
+#admin caption,
+#admin h2 {
   width: 100%;
 }
 
-#admin th, #admin td {
+#admin th,
+#admin td {
   border-right: 1.5px dotted#000;
   border-top: 1px solid #000;
   width: fit-content;
   max-width: 300px;
 }
 
-#admin th:last-child, #admin td:last-child {
+#admin th:last-child,
+#admin td:last-child {
   border-right: none;
 }
 
-#admin tr:first-child th, #admin tr:first-child td {
+#admin tr:first-child th,
+#admin tr:first-child td {
   border-top: none;
 }
 
@@ -222,7 +245,10 @@ a:hover {
   max-height: 200px;
 }
 
-#employeeForm, #remove, #remove form, #remove table {
+#employeeForm,
+#remove,
+#remove form,
+#remove table {
   margin: 10px auto;
   width: fit-content;
 }
@@ -231,190 +257,137 @@ a:hover {
   text-align: right;
 }
 
-#remove, #remove form, #remove table, #employeeForm, #employeeForm select, #employeeForm input, #employeeForm tr td[colspan="2"] {
+#remove,
+#remove form,
+#remove table,
+#employeeForm,
+#employeeForm select,
+#employeeForm input,
+#employeeForm tr td[colspan="2"] {
   text-align: center;
 }
 
 /* #remove form, #remove table { */
-  /* width: 100%; */
+/* width: 100%; */
 /* } */
 
 /* Laptop */
-@media screen 
-  and (min-device-width: 1200px)
-  and (max-device-width: 3840px)
-  and (-webkit-min-device-pixel-ratio: 1) {
-    @import url('./css/desktop.css');
+@media screen and (min-device-width: 1200px) and (max-device-width: 3840px) and (-webkit-min-device-pixel-ratio: 1) {
+  @import url('./css/desktop.css');
 }
 
-@media screen 
-  and (min-device-width: 1200px)
-  and (max-device-width: 3840px)
-  and (-webkit-min-device-pixel-ratio: 2)
-  and (min-resolution: 192dpi) {
-    @import url('./css/desktop.css');
+@media screen and (min-device-width: 1200px) and (max-device-width: 3840px) and (-webkit-min-device-pixel-ratio: 2) and (min-resolution: 192dpi) {
+  @import url('./css/desktop.css');
 }
 
 /* Tablet */
-  /* iPad */
-@media only screen 
-  and (min-device-width: 768px) 
-  and (max-device-width: 1024px) 
-  and (-webkit-min-device-pixel-ratio: 1) {
-    @import url('./css/tablet.css');
+/* iPad */
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 1) {
+  @import url('./css/tablet.css');
 }
-@media only screen 
-  and (min-device-width: 768px) 
-  and (max-device-width: 1024px) 
-  and (-webkit-min-device-pixel-ratio: 2) {
-    @import url('./css/tablet.css');
+
+@media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 2) {
+  @import url('./css/tablet.css');
 }
-@media only screen 
-and (min-device-width: 834px) 
-and (max-device-width: 1112px)
-and (-webkit-min-device-pixel-ratio: 2) {
-    @import url('./css/tablet.css');
+
+@media only screen and (min-device-width: 834px) and (max-device-width: 1112px) and (-webkit-min-device-pixel-ratio: 2) {
+  @import url('./css/tablet.css');
 }
-@media only screen 
-  and (min-device-width: 1024px) 
-  and (max-device-width: 1366px)
-  and (-webkit-min-device-pixel-ratio: 2) {
-    @import url('./css/tablet.css');
+
+@media only screen and (min-device-width: 1024px) and (max-device-width: 1366px) and (-webkit-min-device-pixel-ratio: 2) {
+  @import url('./css/tablet.css');
 }
-  /* Galaxy Tablets */
-@media 
-  (min-device-width: 800px) 
-  and (max-device-width: 1280px) {
-    @import url('./css/tablet.css');
+
+/* Galaxy Tablets */
+@media (min-device-width: 800px) and (max-device-width: 1280px) {
+  @import url('./css/tablet.css');
 }
-@media 
-  (min-device-width: 800px) 
-  and (max-device-width: 1280px)
-  and (-webkit-min-device-pixel-ratio: 2) {
-    @import url('./css/tablet.css');
+
+@media (min-device-width: 800px) and (max-device-width: 1280px) and (-webkit-min-device-pixel-ratio: 2) {
+  @import url('./css/tablet.css');
 }
-  /* Nexus Tablets */
-@media screen 
-  and (device-width: 601px) 
-  and (device-height: 906px) 
-  and (-webkit-min-device-pixel-ratio: 1.331) 
-  and (-webkit-max-device-pixel-ratio: 1.332) {
-    @import url('./css/tablet.css');
+
+/* Nexus Tablets */
+@media screen and (device-width: 601px) and (device-height: 906px) and (-webkit-min-device-pixel-ratio: 1.331) and (-webkit-max-device-pixel-ratio: 1.332) {
+  @import url('./css/tablet.css');
 }
-@media screen 
-  and (device-width: 1536px) 
-  and (device-height: 2048px) 
-  and (-webkit-min-device-pixel-ratio: 1.331) 
-  and (-webkit-max-device-pixel-ratio: 1.332) {
-    @import url('./css/tablet.css');
+
+@media screen and (device-width: 1536px) and (device-height: 2048px) and (-webkit-min-device-pixel-ratio: 1.331) and (-webkit-max-device-pixel-ratio: 1.332) {
+  @import url('./css/tablet.css');
 }
-  /* Kindle Fire */
-@media only screen 
-  and (min-device-width: 800px) 
-  and (max-device-width: 1280px) 
-  and (-webkit-min-device-pixel-ratio: 1.5) {
-    @import url('./css/tablet.css');
+
+/* Kindle Fire */
+@media only screen and (min-device-width: 800px) and (max-device-width: 1280px) and (-webkit-min-device-pixel-ratio: 1.5) {
+  @import url('./css/tablet.css');
 }
-@media only screen 
-  and (min-device-width: 1200px) 
-  and (max-device-width: 1600px) 
-  and (-webkit-min-device-pixel-ratio: 1.5) {
-    @import url('./css/tablet.css');
+
+@media only screen and (min-device-width: 1200px) and (max-device-width: 1600px) and (-webkit-min-device-pixel-ratio: 1.5) {
+  @import url('./css/tablet.css');
 }
 
 /* Phones */
-  /* iPhone */
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 480px)
-  and (-webkit-min-device-pixel-ratio: 2) {
-    @import url('./css/mobile.css');
+/* iPhone */
+@media only screen and (min-device-width: 320px) and (max-device-width: 480px) and (-webkit-min-device-pixel-ratio: 2) {
+  @import url('./css/mobile.css');
 }
-@media only screen 
-  and (min-device-width: 320px) 
-  and (max-device-width: 568px)
-  and (-webkit-min-device-pixel-ratio: 2) {
-    @import url('./css/mobile.css');
+
+@media only screen and (min-device-width: 320px) and (max-device-width: 568px) and (-webkit-min-device-pixel-ratio: 2) {
+  @import url('./css/mobile.css');
 }
-@media only screen 
-  and (min-device-width: 375px) 
-  and (max-device-width: 667px) 
-  and (-webkit-min-device-pixel-ratio: 2) { 
-    @import url('./css/mobile.css');
+
+@media only screen and (min-device-width: 375px) and (max-device-width: 667px) and (-webkit-min-device-pixel-ratio: 2) {
+  @import url('./css/mobile.css');
 }
-@media only screen 
-  and (min-device-width: 414px) 
-  and (max-device-width: 736px) 
-  and (-webkit-min-device-pixel-ratio: 3) { 
-    @import url('./css/mobile.css');
+
+@media only screen and (min-device-width: 414px) and (max-device-width: 736px) and (-webkit-min-device-pixel-ratio: 3) {
+  @import url('./css/mobile.css');
 }
-@media only screen 
-  and (min-device-width: 375px) 
-  and (max-device-width: 812px) 
-  and (-webkit-min-device-pixel-ratio: 3) { 
-    @import url('./css/mobile.css');
+
+@media only screen and (min-device-width: 375px) and (max-device-width: 812px) and (-webkit-min-device-pixel-ratio: 3) {
+  @import url('./css/mobile.css');
 }
-  /* Galaxy Phones */
-@media screen 
-  and (device-width: 360px) 
-  and (device-height: 640px) 
-  and (-webkit-device-pixel-ratio: 2) {
-    @import url('./css/mobile.css');
+
+/* Galaxy Phones */
+@media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 2) {
+  @import url('./css/mobile.css');
 }
-@media screen 
-  and (device-width: 320px) 
-  and (device-height: 640px) 
-  and (-webkit-device-pixel-ratio: 3) {
-    @import url('./css/mobile.css');
+
+@media screen and (device-width: 320px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3) {
+  @import url('./css/mobile.css');
 }
-@media screen 
-  and (device-width: 360px) 
-  and (device-height: 640px) 
-  and (-webkit-device-pixel-ratio: 4) {
-    @import url('./css/mobile.css');
+
+@media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 4) {
+  @import url('./css/mobile.css');
 }
-  /* HTC Phones */
-@media screen 
-  and (device-width: 360px) 
-  and (device-height: 640px) 
-  and (-webkit-device-pixel-ratio: 3) {
-    @import url('./css/mobile.css');
+
+/* HTC Phones */
+@media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3) {
+  @import url('./css/mobile.css');
 }
-  /* Google Pixel */
-@media screen 
-  and (device-width: 360px) 
-  and (device-height: 640px) 
-  and (-webkit-device-pixel-ratio: 3) {
-    @import url('./css/mobile.css');
+
+/* Google Pixel */
+@media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 3) {
+  @import url('./css/mobile.css');
 }
-@media screen 
-  and (device-width: 360px) 
-  and (device-height: 640px) 
-  and (-webkit-device-pixel-ratio: 4) {
-    @import url('./css/mobile.css');
+
+@media screen and (device-width: 360px) and (device-height: 640px) and (-webkit-device-pixel-ratio: 4) {
+  @import url('./css/mobile.css');
 }
-  /* Nexus Phones */
-@media screen 
-  and (device-width: 384px) 
-  and (device-height: 592px) 
-  and (-webkit-device-pixel-ratio: 2) {
-    @import url('./css/mobile.css');
+
+/* Nexus Phones */
+@media screen and (device-width: 384px) and (device-height: 592px) and (-webkit-device-pixel-ratio: 2) {
+  @import url('./css/mobile.css');
 }
-@media screen 
-  and (device-width: 360px) 
-  and (device-height: 592px) 
-  and (-webkit-device-pixel-ratio: 3) {
-    @import url('./css/mobile.css');
+
+@media screen and (device-width: 360px) and (device-height: 592px) and (-webkit-device-pixel-ratio: 3) {
+  @import url('./css/mobile.css');
 }
-@media screen 
-  and (device-width: 360px) 
-  and (device-height: 592px) 
-  and (-webkit-device-pixel-ratio: 4) {
-    @import url('./css/mobile.css');
+
+@media screen and (device-width: 360px) and (device-height: 592px) and (-webkit-device-pixel-ratio: 4) {
+  @import url('./css/mobile.css');
 }
-  /* Windows Phone */
-@media screen 
-  and (device-width: 480px) 
-  and (device-height: 800px) {
-    @import url('./css/mobile.css');
+
+/* Windows Phone */
+@media screen and (device-width: 480px) and (device-height: 800px) {
+  @import url('./css/mobile.css');
 }

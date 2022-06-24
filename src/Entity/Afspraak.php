@@ -22,16 +22,18 @@ class Afspraak
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $status;
 
-    #[ORM\OneToOne(targetEntity: Behandeling::class, cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
-    private $behandeling;
-
     #[ORM\ManyToOne(targetEntity: Klant::class, inversedBy: 'afspraaks')]
     #[ORM\JoinColumn(nullable: false)]
     private $klant;
 
     #[ORM\ManyToOne(targetEntity: Medewerker::class, inversedBy: 'afspraaks')]
     private $medewerker;
+
+    private $BehandelingType;
+
+    #[ORM\ManyToOne(targetEntity: Behandeling::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private $behandeling;
 
     public function getId(): ?int
     {
@@ -74,18 +76,6 @@ class Afspraak
         return $this;
     }
 
-    public function getBetaling(): ?Behandeling
-    {
-        return $this->behandeling;
-    }
-
-    public function setBetaling(Behandeling $behandeling): self
-    {
-        $this->behandeling = $behandeling;
-
-        return $this;
-    }
-
     public function getKlant(): ?Klant
     {
         return $this->klant;
@@ -106,6 +96,30 @@ class Afspraak
     public function setMedewerker(?Medewerker $medewerker): self
     {
         $this->medewerker = $medewerker;
+
+        return $this;
+    }
+
+    public function getBehandelingType(): ?string
+    {
+        return $this->BehandelingType;
+    }
+
+    public function setBehandelingType(?string $BehandelingType): self
+    {
+        $this->BehandelingType = $BehandelingType;
+
+        return $this;
+    }
+
+    public function getBehandeling(): ?Behandeling
+    {
+        return $this->behandeling;
+    }
+
+    public function setBehandeling(?Behandeling $behandeling): self
+    {
+        $this->behandeling = $behandeling;
 
         return $this;
     }

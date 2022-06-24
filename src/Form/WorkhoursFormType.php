@@ -50,7 +50,7 @@ class WorkhoursFormType extends AbstractType
                         'VR 19:00-21:00' => 'VR[19-21]',
                     ],
                     'zaterdag' => [
-                        'ZA 10:00-12:30' => 'ZA[9-12:30]',
+                        'ZA 10:00-12:30' => 'ZA[10-12:30]',
                         'ZA 12:30-15:00' => 'ZA[12:30-15]',
                     ],
                 ],

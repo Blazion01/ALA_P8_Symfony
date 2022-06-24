@@ -13,7 +13,10 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\MedewerkerRepository;
+use App\Repository\AfspraakRepository;
 use App\Form\RemoveFormType;
+use App\Entity\Klant;
+use App\Entity\Medewerker;
 
 class LandingController extends AbstractController
 {
@@ -29,20 +32,14 @@ class LandingController extends AbstractController
     #[Route('/', name: 'app_landing')]
     public function index(): Response
     {
-        if ($this->getUser()) {
-            if (
-                $this->security->isGranted('ROLE_DEV') ||
-                $this->security->isGranted('ROLE_OWNER') ||
-                $this->security->isGranted('ROLE_ADMIN') ||
-                $this->security->isGranted('ROLE_EMPLOYEE')
-            ) return $this->redirectToRoute('app_employee_dashboard');
-            if ($this->security->isGranted('ROLE_CUSTOMER')) return $this->redirectToRoute('app_customer_dashboard');
+        if ($this->getUser() instanceof Klant) {
+            return $this->redirectToRoute('app_customer_dashboard');
+        }
+        if ($this->getUser() instanceof Medewerker) {
+            return $this->redirectToRoute('app_employee_dashboard');
         }
 
         return $this->redirectToRoute('app_customer_dashboard');
-        return $this->render('landing/index.html.twig', [
-            'controller_name' => 'LandingController',
-        ]);
     }
 
     #[Route('/mailtest', name: 'mail_test')]
@@ -69,7 +66,7 @@ class LandingController extends AbstractController
      * @param $entity
      * @param $id
      */
-    public function remove($entity = null, $id = null, EntityManagerInterface $entityManager, MedewerkerRepository $MR, Request $request) {
+    public function remove($entity = null, $id = null, EntityManagerInterface $entityManager, AfspraakRepository $AR, MedewerkerRepository $MR, Request $request) {
         if (!$entity) {
             return $this->redirectToRoute('app_landing');
         }
@@ -104,6 +101,43 @@ class LandingController extends AbstractController
                     $MR->remove($MRresult);
                     $this->addFlash('success', 'succesvol verwijderd.');
                     return $this->redirectToRoute('app_admin_dashboard');
+                }
+                break;
+            case "afspraak":
+                if ($this->getUser() instanceof Klant) {
+                    $entityType = "Klant";
+                    $redirectRoute = 'app_customer_dashboard';
+                }
+                if ($this->getUser() instanceof Medewerker) {
+                    $entityType = "Medewerker";
+                    $redirectRoute = 'app_employee_dashboard';
+                }
+                $ARresult = $AR->find($id);
+                if (!$ARresult) {
+                    $this->addFlash('error', 'Entiteit of type \''.$entity.'\' met id \''.$id.'\' bestaat niet.');
+                    return $this->redirectToRoute($redirectRoute);
+                }
+                switch ($entityType) {
+                    case "Klant": 
+                        if (!$ARresult->getKlant() == $this->getUser()) {
+                            $this->addFlash('error', 'U mag deze afspraak niet verwijderen');
+                            return $this->redirectToRoute($redirectRoute);
+                        }
+                        break;
+                    case "Medewerker":
+                        if (!$ARresult->getMedewerker() == $this->getUser()) {
+                            $this->addFlash('error', 'U mag deze afspraak niet verwijderen');
+                            return $this->redirectToRoute($redirectRoute);
+                        }
+                        break;
+                }
+                if ($form->isSubmitted() && $form->isValid()) {
+                    if (!$form->get('Remove')->getData()) {
+                        return $this->redirectToRoute($redirectRoute);
+                    }
+                    $AR->remove($ARresult);
+                    $this->addFlash('success', `$entity succesvol verwijderd.`);
+                    return $this->redirectToRoute($redirectRoute);
                 }
                 break;
             

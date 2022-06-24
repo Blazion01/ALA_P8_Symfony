@@ -1,72 +1,91 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="UTF-8">
-        <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
-        {# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
-        {{ encore_entry_link_tags('app') }}
-        {{ encore_entry_script_tags('app') }}
-        {% block stylesheets %}
-        {% endblock %}
-    </head>
-    <body>
-        <div id="banner" class="menu">
-            <img onclick="showMenu()" height="50px" src="{{asset('build/images/menu.png')}}" alt="menu" class="logo">
-            <a href="{{path('app_landing')}}">
-                <img height="50px" src="{{asset('build/images/logo/philomena.png')}}" alt="Philomena Logo" class="logo">
-            </a>
-        </div>
+	<head>
+		<meta charset="UTF-8">
+		<title>
+			{% block title %}
+				Welcome!
+			{% endblock %}
+		</title>
+		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text></svg>">
+		{# Run `composer require symfony/webpack-encore-bundle` to start using Symfony UX #}
+		{{ encore_entry_link_tags('app') }}
+		<link type="text/css" rel="stylesheet" href="{{ asset('bundles/craueformflow/css/buttons.css') }}" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css" integrity="sha512-mSYUmp1HYZDFaVKK//63EcZq4iFWFjxSL+Z3T/aCt4IO9Cejm03q3NKKYN6pFQzY0SBOr8h+eCIAZHPXcpZaNw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.standalone.min.css" integrity="sha512-TQQ3J4WkE/rwojNFo6OJdyu6G8Xe9z8rMrlF9y7xpFbQfW5g8aSWcygCQ4vqRiJqFsDsE1T6MoAOMJkFXlrI9A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+		{{ encore_entry_script_tags('app') }}
+		{% block stylesheets %}{% endblock %}
+	</head>
+	<body>
+		<div id="banner" class="menu">
+			<img onclick="showMenu()" height="50px" src="{{asset('build/images/menu.png')}}" alt="menu" class="logo">
+			<a href="{{path('app_landing')}}">
+				<img height="50px" src="{{asset('build/images/logo/philomena.png')}}" alt="Philomena Logo" class="logo">
+			</a>
+		</div>
 
-        <div id="sidebar" class="menu">
-            <nav>
-                <ul>
-                    {% if is_granted('ROLE_CUSTOMER') %}
-                    <li><a href="{{path('app_customer_dashboard')}}">Home {% if is_granted('ROLE_EMPLOYEE') %}- Klant{% endif %}</a></li>
-                    {% endif %}
-                    {% if is_granted('ROLE_EMPLOYEE') %}
-                    <li><a href="{{path('app_employee_dashboard')}}">Home {% if is_granted('ROLE_CUSTOMER') %}- Medewerker{% endif %}</a></li>
-                    {% endif %}
-                    {% if is_granted('ROLE_ADMIN') %}
-                    <li><a href="{{path('app_admin_dashboard')}}">Admin</a></li>
-                    {% endif %}
-                    {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                    <li><a href="{{path('app_logout')}}">Logout</a></li>
-                    {% endif %}
-                </ul>
-            </nav>
-        </div>
+		<div id="sidebar" class="menu">
+			<nav>
+				<ul>
+					{% if is_granted('ROLE_CUSTOMER') %}
+						<li>
+							<a href="{{path('app_customer_dashboard')}}">Home
+								{% if is_granted('ROLE_EMPLOYEE') %}- Klant
+								{% endif %}
+							</a>
+						</li>
+					{% endif %}
+					{% if is_granted('ROLE_EMPLOYEE') %}
+						<li>
+							<a href="{{path('app_employee_dashboard')}}">Home
+								{% if is_granted('ROLE_CUSTOMER') %}- Medewerker
+								{% endif %}
+							</a>
+						</li>
+					{% endif %}
+					{% if is_granted('ROLE_ADMIN') %}
+						<li>
+							<a href="{{path('app_admin_dashboard')}}">Admin</a>
+						</li>
+					{% endif %}
+					{% if is_granted('IS_AUTHENTICATED_FULLY') %}
+						<li>
+							<a href="{{path('app_logout')}}">Logout</a>
+						</li>
+					{% endif %}
+				</ul>
+			</nav>
+		</div>
 
-        <div id="main">
-            {% block pre %}
-            {% endblock %}
+		<div id="main"> {% block pre %}{% endblock %}
 
-            <div id="alerts">
-            {% for label, messages in app.flashes %}
-            {% for message in messages %}
-                <div class="alert alert-{{label}}" role="alert">
-                    <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
-                    {{ message }}
-                </div>
-            {% endfor %}
-            {% endfor %}
-            </div>
-            {% block body %}{% endblock %}
-        </div>
-        <script>
-            const showMenu = () => {
-                let sidebar = document.getElementById("sidebar");
-                if (sidebar.value == 1) {
-                    sidebar.style.left = `-50%`;
-                    sidebar.value = 0;
-                    return;
-                }
-                sidebar.style.left = '0';
-                sidebar.value = 1;
-                return;
-            }
-        </script>
-        {% block javascripts %}
-        {% endblock %}
-    </body>
+			<div id="alerts">
+				{% for label, messages in app.flashes %}
+					{% for message in messages %}
+						<div class="alert alert-{{label}}" role="alert">
+							<span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>
+							{{ message }}
+						</div>
+					{% endfor %}
+				{% endfor %}
+			</div>
+			{% block body %}{% endblock %}
+		</div>
+		<script>
+			const showMenu = () => {
+				let sidebar = document.getElementById("sidebar");
+				if (sidebar.value == 1) {
+					sidebar.style.left = `-50%`;
+					sidebar.value = 0;
+					return;
+				}
+				sidebar.style.left = '0';
+				sidebar.value = 1;
+				return;
+			}
+		</script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js" integrity="sha512-T/tUfKSV1bihCnd+MxKD0Hm1uBBroVYBOYSk1knyvQ9VyZJpc/ALb4P0r6ubwVPSGB2GvjeoMAJJImBG12TiaQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/locales/bootstrap-datepicker.nl.min.js" integrity="sha512-wu9KQfee2uV8RE+AhP6OasxHAeRX+HTTg5MeyKwmzhCv1keCegwJ2DxQSk4bcUUUnVEejzT9jkrm0+HdNUNOsw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+		{% block javascripts %}{% endblock %}
+	</body>
 </html>

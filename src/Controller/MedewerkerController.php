@@ -60,13 +60,34 @@ class MedewerkerController extends AbstractController
     #[Route('/employee', name: 'app_employee_dashboard')]
     public function dashboard(): Response
     {
-        if(!$this->security->isGranted('ROLE_EMPLOYEE')) return $this->redirectToRoute('app_customer_dashboard');
-        return $this->render('employee/dashboard.html.twig');
+        $this->denyAccessUnlessGranted('ROLE_EMPLOYEE');
+
+        $shifts = [];
+        if($this->getUser() instanceof Medewerker) {
+            if ($this->getUser()->getWerkuren()) {
+                foreach ($this->getUser()->getWerkuren()->getHours() as $key => $value) {
+                    array_push($shifts, $value);
+                }
+            }
+        }
+
+        return $this->render('employee/dashboard.html.twig', [
+            'shifts' => $shifts,
+        ]);
     }
 
-    #[Route('/employee/admin', name: 'app_admin_dashboard')]
+    #[Route('/admin', name: 'app_admin_dashboard')]
     public function adminDashboard(MedewerkerRepository $MR, BehandelingRepository $BR, PaginatorInterface $paginator): Response
     {
+        $shifts = [];
+        if ($this->getUser() instanceof Medewerker) {
+            if ($this->getUser()->getWerkuren()) {
+                foreach ($this->getUser()->getWerkuren()->getHours() as $key => $value) {
+                    array_push($shifts, $value);
+                }
+            }
+        }
+
         $temp = $MR->findAll();
         $employees = [];
         foreach($temp as $employee) {
@@ -120,12 +141,21 @@ class MedewerkerController extends AbstractController
         return $this->render('employee/adminDashboard.html.twig', [
             'employees' => $employees,
             'behandelingen' => $behandelingen,
+            'shifts' => $shifts,
         ]);
     }
 
     #[Route('/employee/hours', name: 'app_employee_hours')]
     public function hoursForm(EntityManagerInterface $entityManager, WerkurenRepository $WR, Request $request): Response
     {
+        $redirectRoute = "app_customer_dashboard";
+        if ($this->security->isGranted('ROLE_EMPLOYEE')) $redirectRoute = "app_employee_dashboard";
+        if ($this->security->isGranted('ROLE_ADMIN')) $redirectRoute = "app_admin_dashboard";
+        if(!$this->getUser() instanceof Medewerker) {
+            $this->addFlash('info', 'Alleen medewerkeraccounts kunnen hier komen.');
+            return $this->redirectToRoute($redirectRoute);
+        }
+
         $hours = new Werkuren();
         if($this->getUser()->getWerkuren()) {
             $hours = $this->getUser()->getWerkuren();
@@ -139,7 +169,7 @@ class MedewerkerController extends AbstractController
 
             $entityManager->flush();
             $this->addFlash('success', 'werkuren bijgewerkt');
-            return $this->redirectToRoute('app_employee_dashboard');
+            return $this->redirectToRoute($redirectRoute);
         }
 
         return $this->render('employee/workhours_form.html.twig', [
@@ -147,8 +177,8 @@ class MedewerkerController extends AbstractController
         ]);
     }
 
-    #[Route('/employee/create', name: 'app_create_employee')]
-    #[Route('/employee/edit/{id}', name: 'app_edit_employee', requirements: ['id' => '\d+'])]
+    #[Route('/admin/employee/create', name: 'app_create_employee')]
+    #[Route('/admin/employee/edit/{id}', name: 'app_edit_employee', requirements: ['id' => '\d+'])]
     public function register(int $id = null, Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, MedewerkerRepository $MR): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
@@ -259,8 +289,8 @@ class MedewerkerController extends AbstractController
         ]);
     }
 
-    #[Route('/employee/behandeling/create', name: 'app_create_behandeling')]
-    #[Route('/employee/behandeling/edit/{id}', name: 'app_edit_behandeling', requirements: ['id' => '\d+'])]
+    #[Route('/admin/behandeling/create', name: 'app_create_behandeling')]
+    #[Route('/admin/behandeling/edit/{id}', name: 'app_edit_behandeling', requirements: ['id' => '\d+'])]
     public function addBehandeling(int $id = null, Request $request, EntityManagerInterface $entityManager, BehandelingRepository $BR): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');

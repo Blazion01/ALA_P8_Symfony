@@ -1,0 +1,148 @@
+
+
+{% extends "base.html.twig" %}
+
+{% block body %}
+  <div>
+    Steps: {% include "@CraueFormFlow/FormFlow/stepList.html.twig" %}
+  </div>
+  {{ form_start(form) }}
+    {# <input type="hidden" name="getStep" value="flow.getCurrentStepNumber"> #}
+    {{ form_errors(form) }}
+    {% if flow.getCurrentStepNumber() == 1 %}
+        <div>
+          {{ form_label(form.BehandelingType) }}<br>
+          {{ form_widget(form.BehandelingType) }}
+        </div>
+    {% endif %}
+    {% if flow.getCurrentStepNumber() == 2 %}
+        <div>
+          {{ form_label(form.behandeling) }}<br>
+          {{ form_widget(form.behandeling) }}
+        </div>
+    {% endif %}
+    {% if flow.getCurrentStepNumber() == 3 %}
+        <div>
+          {{ form_label(form.datum) }}<br>
+          {{ form_widget(form.datum) }}
+        </div>
+    {% endif %}
+    {% if flow.getCurrentStepNumber() == 4 %}
+        <div>
+          {{ form_label(form.tijd) }}<br>
+          {{ form_widget(form.tijd) }}
+        </div>
+    {% endif %}
+    {% if flow.getCurrentStepNumber() == 5 %}
+        <div>
+          <p>Hier zou een IDEAL betaling moeten komen</p>
+        </div>
+    {% endif %}
+    {% if flow.getCurrentStepNumber() == 6 %}
+        <div>
+          <table>
+            <tr>
+              <td><strong>Groep</strong></td>
+              <td>{{formData.groep}}</td>
+            </tr>
+            <tr>
+              <td><strong>Naam</strong></td>
+              <td>{{formData.naam}}</td>
+            </tr>
+            <tr>
+              <td><strong>Tijd</strong></td>
+              <td>{{formData.tijd}}</td>
+            </tr>
+            <tr>
+              <td><strong>Prijs</strong></td>
+              <td>{{formData.prijs}}</td>
+            </tr>
+          </table>
+        </div>
+    {% endif %}
+    {{ form_rest(form) }}
+    {% include "@CraueFormFlow/FormFlow/buttons.html.twig" %}
+  {{ form_end(form) }}
+
+  <script>
+    {% if flow.getCurrentStepNumber() == 2 %}
+      if (typeof document.getElementById('afspraak_form_BehandelingType') !== "undefined") {
+        let sct = document.getElementById('afspraak_form_behandeling');
+        if (sct != null) {
+          let filter = document.getElementById('afspraak_form_BehandelingType').value;
+          let options = sct.children;
+          for (let i = 1; i < options.length; i++) {
+            let option = options.item(i);
+            let substring = option.getAttribute('label').substring(0,1);
+            let index = i + 1;
+            console.log(substring);
+            if (filter == "N") {
+              if (substring == "H") {
+                option.setAttribute('disabled', true);
+                option.setAttribute('style', 'display: none;');
+                continue;
+              }
+            }
+            if (filter == "H") {
+              if (substring == "N") {
+                option.setAttribute('disabled', true);
+                option.setAttribute('style', 'display: none;');
+                continue;
+              }
+            }
+          }
+        }
+      }
+    {% endif %}
+    {% if flow.getCurrentStepNumber() == 3 %}
+      $(document).ready(function() {
+        const weekStart = new Date(Date.now() + (3600 * 1000 * 24));
+        // you may need to change this code if you are not using Bootstrap Datepicker
+        $('.js-datepicker.form-control').datepicker({
+            format: 'yyyy-mm-dd',
+            startDate: '+1d',
+            endDate: '+91d',
+            todayHighlight: true,
+            toggleActive: true,
+            weekStart: weekStart.getDay(),
+        });
+      });
+    {% endif %}
+    {% if flow.getCurrentStepNumber() == 4 %}
+      let formDatum = $('#afspraak_form_datum').val();
+      let datum = new Date(formDatum).toString().split(' ');
+      console.log(datum);
+      const setTimeConstraint = (day = datum[0]) => {
+        let formTijd = $('#afspraak_form_tijd');
+        let formTijdUren = formTijd.find('#afspraak_form_tijd_hour');
+        let formTijdUrenChildren = formTijdUren.children();
+        switch(day) {
+          case 'Sat':
+            formTijdUrenChildren.each(function() {
+              if (($(this).val() == 15) || ($(this).val() == 16)|| ($(this).val() == 17)) {
+                $(this).addClass('disabled');
+                $(this).attr('disabled','disabled');
+              }
+            })
+          case 'Mon':
+          case 'Tue':
+          case 'Wed':
+          case 'Thu':
+            formTijdUrenChildren.each(function() {
+              if (($(this).val() == 19) || ($(this).val() == 20)) {
+                $(this).addClass('disabled');
+                $(this).attr('disabled','disabled');
+              }
+            })
+            break;
+          case 'Sun':
+            formTijd.replaceWith('<p>Wij zijn op zondag niet open!</p>');
+            $('button.craue_formflow_button_last').css('display', 'none');
+            break;
+        }
+      }
+
+      setTimeConstraint();
+    {% endif %}
+  </script>
+{% endblock %}

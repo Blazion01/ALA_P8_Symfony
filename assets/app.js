@@ -10,3 +10,8 @@ import './styles/app.css';
 
 // start the Stimulus application
 import './bootstrap';
+
+const $ = require('jquery');
+global.$ = global.jQuery = $;
+// require('bootstrap/dist/css/bootstrap.css'); // datepicker werkt niet wanneer ik dit inlaad
+// require('bootstrap/dist/js/bootstrap.js'); // datepicker werkt niet wanneer ik dit inlaad

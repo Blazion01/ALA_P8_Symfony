@@ -2,13 +2,192 @@
 
 {% block body %}
 <div class="customer dashboard">
-  <div id="afspraken">
-    <div><!-- pending -->
-
+  <div id="afspraken" style="text-align: center;">
+    <a href="{{ path('app_afspraak_create') }}"><button class="btn btn-link">Voeg afspraak toe</button></a>
+    {% if afspraken.pending|length > 0 %}
+    <div class="show" onclick="change('pending', 'pendingShow')">
+      <h2>Nog te gaan: {{afspraken.pending|length}}</h2>
+      <p id="pendingShow"><strong>^</strong></p>
     </div>
-    <div><!-- done -->
-      
+    <div id="pending" style="display: none;">
+      <!-- pending -->
+      {% for afspraak in afspraken.pending %}
+      <div class="card" style="background-color: white; width: fit-content; min-width: 100px; text-align: center; display: inline-block; margin: 5px; padding: 5px; border: 2px solid black; border-radius:15px;">
+        <div class="card-body">
+          <p>
+            <strong>{{afspraak.id}}</strong><br>
+          </p>
+          <hr>
+          <table>
+            <tr>
+              <th>Tijd</th>
+            </tr>
+            <tr>
+              <td>
+                {{afspraak.time}}<br>
+                {{afspraak.timeFromNow}}
+              </td>
+            </tr>
+            <tr>
+              <th>Groep:</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.type}}</td>
+            </tr>
+            <tr>
+              <th>Naam</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.naam}}</td>
+            </tr>
+            <tr>
+              <th>Prijs:</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.prijs}}</td>
+            </tr>
+            <tr>
+              <th>Status:</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.status}}</td>
+            </tr>
+          </table>
+          <hr>
+          <a href="{{path('app_confirm_delete', {'entity': 'afspraak', 'id': afspraak.redirectId})}}"><button type="button" class="btn btn-link">Afspraak afzeggen</button></a>
+        </div>
+      </div>
+      {% endfor %}
     </div>
+    {% endif %}
+    {% if afspraken.done|length > 0 %}
+    <div class="show" onclick="change('done', 'doneShow')">
+      <h2>Geweest: {{afspraken.done|length}}</h2>
+      <p id="doneShow"><strong>^</strong></p>
+    </div>
+    <div id="done" style="display: none;">
+      <!-- done -->
+      {% for afspraak in afspraken.done %}
+      <div class="card" style="background-color: white; width: fit-content; min-width: 100px; text-align: center; display: inline-block; margin: 5px; padding: 5px; border: 2px solid black; border-radius:15px;">
+        <div class="card-body">
+          <p>
+            <strong>{{afspraak.id}}</strong><br>
+          </p>
+          <hr>
+          <table>
+            <tr>
+              <th>Tijd</th>
+            </tr>
+            <tr>
+              <td>
+                {{afspraak.time}}<br>
+                {{afspraak.timeFromNow}}
+              </td>
+            </tr>
+            <tr>
+              <th>Groep:</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.type}}</td>
+            </tr>
+            <tr>
+              <th>Naam</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.naam}}</td>
+            </tr>
+            <tr>
+              <th>Prijs:</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.prijs}}</td>
+            </tr>
+            <tr>
+              <th>Status:</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.status}}</td>
+            </tr>
+          </table>
+          <hr>
+          <a href="{{path('app_confirm_delete', {'entity': 'afspraak', 'id': afspraak.redirectId})}}"><button type="button" class="btn btn-link">Afspraak afzeggen</button></a>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    {% if afspraken.rejected|length > 0 %}
+      <div class="show" onclick="change('rejected', 'rejectedShow')">
+        <h2>Afgekeurd: {{afspraken.rejected|length}}</h2>
+        <p id="rejectedShow"><strong>^</strong></p>
+      </div>
+      <div id="rejected" style="display: none;">
+        <!-- rejected -->
+        {% for afspraak in afspraken.rejected %}
+      <div class="card" style="background-color: white; width: fit-content; min-width: 100px; text-align: center; display: inline-block; margin: 5px; padding: 5px; border: 2px solid black; border-radius:15px;">
+        <div class="card-body">
+          <p>
+            <strong>{{afspraak.id}}</strong><br>
+          </p>
+          <hr>
+          <table>
+            <tr>
+              <th>Tijd</th>
+            </tr>
+            <tr>
+              <td>
+                {{afspraak.time}}<br>
+                {{afspraak.timeFromNow}}
+              </td>
+            </tr>
+            <tr>
+              <th>Groep:</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.type}}</td>
+            </tr>
+            <tr>
+              <th>Naam</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.naam}}</td>
+            </tr>
+            <tr>
+              <th>Prijs:</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.prijs}}</td>
+            </tr>
+            <tr>
+              <th>Status:</th>
+            </tr>
+            <tr>
+              <td>{{afspraak.status}}</td>
+            </tr>
+          </table>
+          <hr>
+          <a href="{{path('app_confirm_delete', {'entity': 'afspraak', 'id': afspraak.redirectId})}}"><button type="button" class="btn btn-link">Afspraak afzeggen</button></a>
+        </div>
+      </div>
+        {% endfor %}
+      </div>
+    {% endif %}
   </div>
 </div>
+{% endblock %}
+
+{% block javascripts %}
+<script>
+  const change = (id, idTwo) => {
+    let tbl = document.getElementById(id);
+    var tblc = document.getElementById(idTwo);
+    if (tbl.style.display == "none") {
+      tbl.style.display = "block";
+      tblc.style.transform = "rotate(0deg) translateY(-20px)";
+    } else {
+      tbl.style.display = "none";
+      tblc.style.transform = "rotate(180deg) translateY(20px)";
+    }
+  }
+</script>
 {% endblock %}

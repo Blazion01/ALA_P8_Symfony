@@ -84,6 +84,18 @@ class BehandelingRepository extends ServiceEntityRepository
             ->getSingleScalarResult();
     }
 
+    public function getRowsByGroepSubstringQB(string $substr)
+    {
+        return $this->createQueryBuilder('b')
+            ->where(`:substr IN b.groep`)
+            ->setParameter('substr', $substr);
+    }
+
+    public function findAllQB()
+    {
+        return $this->createQueryBuilder('b');
+    }
+
     /* 
      * @param string|null $term
      */
