@@ -117,12 +117,42 @@
   const change = (id, idTwo) => {
     let tbl = document.getElementById(id);
     var tblc = document.getElementById(idTwo);
-    if (tbl.style.display == "none") {
-      tbl.style.display = "table-row-group";
-      tblc.style.transform = "rotate(0deg) translateY(-20px)";
+    if((id == "behandelingen") || (id == "employees")) {
+      if (tbl.style.display == "none") {
+        tbl.style.display = "table-row-group";
+        tblc.style.transform = "rotate(0deg) translateY(-20px)";
+      } else {
+        tbl.style.display = "none";
+        tblc.style.transform = "rotate(180deg) translateY(20px)";
+      }
     } else {
-      tbl.style.display = "none";
-      tblc.style.transform = "rotate(180deg) translateY(20px)";
+      if (tbl.style.display == "none") {
+        tbl.style.display = "block";
+        tblc.style.transform = "rotate(0deg) translateY(-20px)";
+      } else {
+        tbl.style.display = "none";
+        tblc.style.transform = "rotate(180deg) translateY(20px)";
+      }
+    }
+  }
+
+  const allow = formId => {
+    switch (formId.split('|')[0]) {
+      case 'removeAfspraak':
+        if (confirm('Weet je zeker dat je deze afspraak wil afzeggen?')) {
+          document.getElementById(formId).submit();
+        }
+        break;
+      case 'complete':
+        if (confirm('Weet je zeker dat deze afspraak afgerond is?')) {
+          document.getElementById(formId).submit();
+        }
+        break;
+      case 'aanwezig':
+        if (confirm('Weet je zeker dat de klant die bij deze afspraak hoort er is?')) {
+          document.getElementById(formId).submit();
+        }
+        break;
     }
   }
 </script>

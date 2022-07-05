@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
+use App\Repository\AfspraakRepository;
 use App\Repository\MedewerkerRepository;
 use App\Repository\BehandelingRepository;
 use App\Repository\WerkurenRepository;
@@ -24,16 +25,19 @@ use App\Form\BehandelingFormType;
 use App\Form\WorkhoursFormType;
 use App\Form\MedewerkerEditType;
 use Knp\Component\Pager\PaginatorInterface;
+use Knp\Bundle\TimeBundle\DateTimeFormatter;
 
 class MedewerkerController extends AbstractController
 {
     private $security;
     private $mailer;
+    private $DTF;
 
-    public function __construct(Security $security, MailerInterface $mailer)
+    public function __construct(DateTimeFormatter $DTF, Security $security, MailerInterface $mailer)
     {
         $this->security = $security;
         $this->mailer = $mailer;
+        $this->DTF = $DTF;
     }
 
     /* #[Route(path: '/employee/login', name: 'app_login_employee')]
@@ -58,35 +62,407 @@ class MedewerkerController extends AbstractController
     } */
 
     #[Route('/employee', name: 'app_employee_dashboard')]
-    public function dashboard(): Response
+    public function dashboard(Request $request, EntityManagerInterface $entityManager, AfspraakRepository $AR): Response
     {
         $this->denyAccessUnlessGranted('ROLE_EMPLOYEE');
 
         $shifts = [];
+        $afspraken = [
+            "pending" => [],
+            "done" => [],
+            "rejected" => [],
+            "unlinked" => [],
+        ];
+
+        $i = 0;
         if($this->getUser() instanceof Medewerker) {
+            if($request->request->get('link')) {
+                $afspraak = $AR->find($request->request->get('id'));
+                $afspraak->setStatus('acknowledged');
+                $afspraak->setMedewerker($this->getUser());
+                $entityManager->persist($afspraak);
+                $entityManager->flush();
+            }
+            if($request->request->get('afzeggen')) {
+                $afspraak = $AR->find($request->request->get('id'));
+                $afspraak->setStatus('rejected');
+                $entityManager->persist($afspraak);
+                $entityManager->flush();
+            }
+            if($request->request->get('aanwezig')) {
+                $afspraak = $AR->find($request->request->get('id'));
+                $afspraak->setStatus('Aanwezig');
+                $entityManager->persist($afspraak);
+                $entityManager->flush();
+            }
+            if($request->request->get('complete')) {
+                $afspraak = $AR->find($request->request->get('id'));
+                $afspraak->setStatus('done');
+                $entityManager->persist($afspraak);
+                $entityManager->flush();
+            }
+
             if ($this->getUser()->getWerkuren()) {
                 foreach ($this->getUser()->getWerkuren()->getHours() as $key => $value) {
                     array_push($shifts, $value);
                 }
             }
+
+            foreach ($AR->findMedewerkerAfspraken($this->getUser()) as $key => $value) {
+                $i++;
+                $row["id"] = $i;
+                $row["redirectId"] = $value->getId();
+                $row["klant"] = $value->getKlant()->getVoornaam().' '.$value->getKlant()->getAchternaam();
+                $row["email"] = $value->getKlant()->getEmail();
+                $row["time"] = $value->getDatum()->format("d-m-Y")." ".$value->getTijd()->format("H:i");
+                $row["timeFromNow"] = $this->DTF->formatDiff(new \DateTime($value->getDatum()->format("d-m-Y")." ".$value->getTijd()->format("H:i")), new \DateTime());
+                switch ($value->getStatus()) {
+                    case "done":
+                        $row["status"] = "Gedaan";
+                        break;
+                    case "pending":
+                        $row["status"] = "Wordt bekeken";
+                        break;
+                    case "acknowledged":
+                        $row["status"] = "Ingeroosterd";
+                        break;
+                    case "rejected":
+                        $row["status"] = "Afgekeurd";
+                        break;
+                    case "didNotShow":
+                        $row["status"] = "Niet langsgekomen";
+                        break;
+                    default:
+                        $row["status"] = $value->getStatus();
+                        break;
+                }
+                switch ($value->getBehandeling()->getGroep()) {
+                    case 'NN':
+                        $row["type"] = "Nagels | Nieuwe Set";
+                        break;
+                    case 'NA':
+                        $row["type"] = "Nagels | Nabehandeling";
+                        break;
+                    case 'NH':
+                        $row["type"] = "Nagels | Handen";
+                        break;
+                    case 'NV':
+                        $row["type"] = "Nagels | Voeten";
+                        break;
+                    case 'HD':
+                        $row["type"] = "Haar | Dames";
+                        break;
+                    case 'HH':
+                        $row["type"] = "Haar | Heren";
+                        break;
+                    case 'HK':
+                        $row["type"] = "Haar | Kinderen t/m 11 jaar";
+                        break;
+                    case 'HT':
+                        $row["type"] = "Haar | Kinderen 12 t/m 15 jaar";
+                        break;
+                    default:
+                        $row["type"] = null;
+                        break;
+                }
+                $row["naam"] = $value->getBehandeling()->getNaam();
+                $row["prijs"] = $value->getBehandeling()->getPrijs();
+                if (($row["timeFromNow"][0] != "i") && (!(($row["status"] == "Afgekeurd") || ($row["status"] == "Aanwezig") || ($row["status"] == "Gedaan") || ($row["status"] == "Niet langsgekomen")))) {
+                    $value->setStatus("didNotShow");
+                    $entityManager->persist($value);
+                    $row["status"] = "Niet langsgekomen";
+                }
+                if (($row["status"] == "Afgekeurd") || ($row["status"] == "Niet langsgekomen")) {
+                    array_push($afspraken["rejected"], $row);
+                    continue;
+                }
+                if ($row["timeFromNow"][0] == "i") {
+                    array_push($afspraken["pending"], $row);
+                    continue;
+                }
+                array_push($afspraken["done"], $row);
+            }
         }
+
+        foreach ($AR->findBy(["medewerker" => null]) as $key => $value) {
+            $i++;
+            $row["id"] = $i;
+            $row["redirectId"] = $value->getId();
+            $row["klant"] = $value->getKlant()->getVoornaam().' '.$value->getKlant()->getAchternaam();
+            $row["email"] = $value->getKlant()->getEmail();
+            $row["time"] = $value->getDatum()->format("d-m-Y")." ".$value->getTijd()->format("H:i");
+            $row["timeFromNow"] = $this->DTF->formatDiff(new \DateTime($value->getDatum()->format("d-m-Y")." ".$value->getTijd()->format("H:i")), new \DateTime());
+            switch ($value->getStatus()) {
+                case "done":
+                    $row["status"] = "Gedaan";
+                    break;
+                case "pending":
+                    $row["status"] = "Wordt bekeken";
+                    break;
+                case "acknowledged":
+                    $row["status"] = "Ingeroosterd";
+                    break;
+                case "rejected":
+                    $row["status"] = "Afgekeurd";
+                    break;
+                case "didNotShow":
+                    $row["status"] = "Niet langsgekomen";
+                    break;
+                default:
+                    $row["status"] = $value->getStatus();
+                    break;
+            }
+            switch ($value->getBehandeling()->getGroep()) {
+                case 'NN':
+                    $row["type"] = "Nagels | Nieuwe Set";
+                    break;
+                case 'NA':
+                    $row["type"] = "Nagels | Nabehandeling";
+                    break;
+                case 'NH':
+                    $row["type"] = "Nagels | Handen";
+                    break;
+                case 'NV':
+                    $row["type"] = "Nagels | Voeten";
+                    break;
+                case 'HD':
+                    $row["type"] = "Haar | Dames";
+                    break;
+                case 'HH':
+                    $row["type"] = "Haar | Heren";
+                    break;
+                case 'HK':
+                    $row["type"] = "Haar | Kinderen t/m 11 jaar";
+                    break;
+                case 'HT':
+                    $row["type"] = "Haar | Kinderen 12 t/m 15 jaar";
+                    break;
+                default:
+                    $row["type"] = null;
+                    break;
+            }
+            $row["naam"] = $value->getBehandeling()->getNaam();
+            $row["prijs"] = $value->getBehandeling()->getPrijs();
+            if (($row["timeFromNow"][0] != "i") && (!(($row["status"] == "Afgekeurd") || ($row["status"] == "Aanwezig") || ($row["status"] == "Gedaan") || ($row["status"] == "Niet langsgekomen")))) {
+                $value->setStatus("didNotShow");
+                $entityManager->persist($value);
+                $row["status"] = "Niet langsgekomen";
+            }
+            if(($row["status"] == "Afgekeurd") || ($row["status"] == "Niet langsgekomen")) {
+                array_push($afspraken["rejected"], $row);
+                continue;
+            }
+            $row["link"] = false;
+            if($this->getUser() instanceof Medewerker) {
+                $row["link"] = true;
+            }
+            array_push($afspraken["unlinked"], $row);
+        }
+        $entityManager->flush();
 
         return $this->render('employee/dashboard.html.twig', [
             'shifts' => $shifts,
+            'afspraken' => $afspraken,
         ]);
     }
 
     #[Route('/admin', name: 'app_admin_dashboard')]
-    public function adminDashboard(MedewerkerRepository $MR, BehandelingRepository $BR, PaginatorInterface $paginator): Response
+    public function adminDashboard(Request $request, EntityManagerInterface $entityManager, AfspraakRepository $AR, MedewerkerRepository $MR, BehandelingRepository $BR, PaginatorInterface $paginator): Response
     {
         $shifts = [];
+        $afspraken = [
+            "pending" => [],
+            "done" => [],
+            "rejected" => [],
+            "unlinked" => [],
+            "misc" => [],
+        ];
+
+        $i = 0;
         if ($this->getUser() instanceof Medewerker) {
+            if($request->request->get('link')) {
+                $afspraak = $AR->find($request->request->get('id'));
+                $afspraak->setStatus('acknowledged');
+                $afspraak->setMedewerker($this->getUser());
+                $entityManager->persist($afspraak);
+                $entityManager->flush();
+            }
+            if($request->request->get('afzeggen')) {
+                $afspraak = $AR->find($request->request->get('id'));
+                $afspraak->setStatus('rejected');
+                $entityManager->persist($afspraak);
+                $entityManager->flush();
+            }
+            if($request->request->get('aanwezig')) {
+                $afspraak = $AR->find($request->request->get('id'));
+                $afspraak->setStatus('Aanwezig');
+                $entityManager->persist($afspraak);
+                $entityManager->flush();
+            }
+            if($request->request->get('complete')) {
+                $afspraak = $AR->find($request->request->get('id'));
+                $afspraak->setStatus('done');
+                $entityManager->persist($afspraak);
+                $entityManager->flush();
+            }
+
             if ($this->getUser()->getWerkuren()) {
                 foreach ($this->getUser()->getWerkuren()->getHours() as $key => $value) {
                     array_push($shifts, $value);
                 }
             }
+
+            foreach ($AR->findMedewerkerAfspraken($this->getUser()) as $key => $value) {
+                $i++;
+                $row["id"] = $i;
+                $row["redirectId"] = $value->getId();
+                $row["klant"] = $value->getKlant()->getVoornaam().' '.$value->getKlant()->getAchternaam();
+                $row["email"] = $value->getKlant()->getEmail();
+                $row["time"] = $value->getDatum()->format("d-m-Y")." ".$value->getTijd()->format("H:i");
+                $row["timeFromNow"] = $this->DTF->formatDiff(new \DateTime($value->getDatum()->format("d-m-Y")." ".$value->getTijd()->format("H:i")), new \DateTime());
+                switch ($value->getStatus()) {
+                    case "done":
+                        $row["status"] = "Gedaan";
+                        break;
+                    case "pending":
+                        $row["status"] = "Wordt bekeken";
+                        break;
+                    case "acknowledged":
+                        $row["status"] = "Ingeroosterd";
+                        break;
+                    case "rejected":
+                        $row["status"] = "Afgekeurd";
+                        break;
+                    case "didNotShow":
+                        $row["status"] = "Niet langsgekomen";
+                        break;
+                    default:
+                        $row["status"] = $value->getStatus();
+                        break;
+                }
+                switch ($value->getBehandeling()->getGroep()) {
+                    case 'NN':
+                        $row["type"] = "Nagels | Nieuwe Set";
+                        break;
+                    case 'NA':
+                        $row["type"] = "Nagels | Nabehandeling";
+                        break;
+                    case 'NH':
+                        $row["type"] = "Nagels | Handen";
+                        break;
+                    case 'NV':
+                        $row["type"] = "Nagels | Voeten";
+                        break;
+                    case 'HD':
+                        $row["type"] = "Haar | Dames";
+                        break;
+                    case 'HH':
+                        $row["type"] = "Haar | Heren";
+                        break;
+                    case 'HK':
+                        $row["type"] = "Haar | Kinderen t/m 11 jaar";
+                        break;
+                    case 'HT':
+                        $row["type"] = "Haar | Kinderen 12 t/m 15 jaar";
+                        break;
+                    default:
+                        $row["type"] = null;
+                        break;
+                }
+                $row["naam"] = $value->getBehandeling()->getNaam();
+                $row["prijs"] = $value->getBehandeling()->getPrijs();
+                if (($row["timeFromNow"][0] != "i") && (!(($row["status"] == "Afgekeurd") || ($row["status"] == "Aanwezig") || ($row["status"] == "Gedaan") || ($row["status"] == "Niet langsgekomen")))) {
+                    $value->setStatus("didNotShow");
+                    $entityManager->persist($value);
+                    $row["status"] = "Niet langsgekomen";
+                }
+                if (($row["status"] == "Afgekeurd") || ($row["status"] == "Niet langsgekomen")) {
+                    array_push($afspraken["rejected"], $row);
+                    continue;
+                }
+                if ($row["timeFromNow"][0] == "i") {
+                    array_push($afspraken["pending"], $row);
+                    continue;
+                }
+                array_push($afspraken["done"], $row);
+            }
         }
+
+        foreach ($AR->findBy(["medewerker" => null]) as $key => $value) {
+            $i++;
+            $row["id"] = $i;
+            $row["redirectId"] = $value->getId();
+            $row["klant"] = $value->getKlant()->getVoornaam().' '.$value->getKlant()->getAchternaam();
+            $row["email"] = $value->getKlant()->getEmail();
+            $row["time"] = $value->getDatum()->format("d-m-Y")." ".$value->getTijd()->format("H:i");
+            $row["timeFromNow"] = $this->DTF->formatDiff(new \DateTime($value->getDatum()->format("d-m-Y")." ".$value->getTijd()->format("H:i")), new \DateTime());
+            switch ($value->getStatus()) {
+                case "done":
+                    $row["status"] = "Gedaan";
+                    break;
+                case "pending":
+                    $row["status"] = "Wordt bekeken";
+                    break;
+                case "acknowledged":
+                    $row["status"] = "Ingeroosterd";
+                    break;
+                case "rejected":
+                    $row["status"] = "Afgekeurd";
+                    break;
+                case "didNotShow":
+                    $row["status"] = "Niet langsgekomen";
+                    break;
+                default:
+                    $row["status"] = $value->getStatus();
+                    break;
+            }
+            switch ($value->getBehandeling()->getGroep()) {
+                case 'NN':
+                    $row["type"] = "Nagels | Nieuwe Set";
+                    break;
+                case 'NA':
+                    $row["type"] = "Nagels | Nabehandeling";
+                    break;
+                case 'NH':
+                    $row["type"] = "Nagels | Handen";
+                    break;
+                case 'NV':
+                    $row["type"] = "Nagels | Voeten";
+                    break;
+                case 'HD':
+                    $row["type"] = "Haar | Dames";
+                    break;
+                case 'HH':
+                    $row["type"] = "Haar | Heren";
+                    break;
+                case 'HK':
+                    $row["type"] = "Haar | Kinderen t/m 11 jaar";
+                    break;
+                case 'HT':
+                    $row["type"] = "Haar | Kinderen 12 t/m 15 jaar";
+                    break;
+                default:
+                    $row["type"] = null;
+                    break;
+            }
+            $row["naam"] = $value->getBehandeling()->getNaam();
+            $row["prijs"] = $value->getBehandeling()->getPrijs();
+            if (($row["timeFromNow"][0] != "i") && (!(($row["status"] == "Afgekeurd") || ($row["status"] == "Aanwezig") || ($row["status"] == "Gedaan") || ($row["status"] == "Niet langsgekomen")))) {
+                $value->setStatus("didNotShow");
+                $entityManager->persist($value);
+                $row["status"] = "Niet langsgekomen";
+            }
+            if(($row["status"] == "Afgekeurd") || ($row["status"] == "Niet langsgekomen")) {
+                array_push($afspraken["rejected"], $row);
+                continue;
+            }
+            $row["link"] = false;
+            if($this->getUser() instanceof Medewerker) {
+                $row["link"] = true;
+            }
+            array_push($afspraken["unlinked"], $row);
+        }
+        $entityManager->flush();
 
         $temp = $MR->findAll();
         $employees = [];
@@ -133,7 +509,7 @@ class MedewerkerController extends AbstractController
             $behandelingTemp["naam"] = $behandeling->getNaam();
             $behandelingTemp["prijs"] = $behandeling->getPrijs();
             $behandelingTemp["edit"] = true;
-            $behandelingTemp["remove"] = false;
+            $behandelingTemp["remove"] = true;
 
             array_push($behandelingen, $behandelingTemp);
         }
@@ -142,6 +518,7 @@ class MedewerkerController extends AbstractController
             'employees' => $employees,
             'behandelingen' => $behandelingen,
             'shifts' => $shifts,
+            'afspraken' => $afspraken,
         ]);
     }
 

@@ -33,8 +33,8 @@ security:
             provider: all_users
             custom_authenticator: 
                 - App\Security\MedewerkerAuthenticator
-                - App\Security\CustomerAuthenticator
                 - App\Security\KlantAuthenticator
+                - App\Security\CustomerAuthenticator
             entry_point: App\Security\MedewerkerAuthenticator
             logout:
                 path: app_logout
@@ -97,8 +97,7 @@ security:
         - { path: ^/register, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
         - { path: ^/employee, roles: ROLE_EMPLOYEE }
-        - { path: ^/customer/dashboard, roles: PUBLIC_ACCESS }
-        - { path: ^/customer, roles: ROLE_CUSTOMER }
+        - { path: ^/customer, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

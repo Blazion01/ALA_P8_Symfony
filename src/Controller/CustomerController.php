@@ -5,7 +5,6 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Http\Authentication\AuthenticationUtils;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\Security;
 use Knp\Component\Pager\PaginatorInterface;
@@ -37,31 +36,10 @@ class CustomerController extends AbstractController
         $this->DTF = $DTF;
     }
 
-    #[Route(path: '/login', name: 'app_login')]
-    public function login(AuthenticationUtils $authenticationUtils, $userType = null): Response
-    {
-        if ($this->getUser()) {
-            return $this->redirectToRoute('app_landing');
-        }
-
-        // get the login error if there is one
-        $error = $authenticationUtils->getLastAuthenticationError();
-        // last username entered by the user
-        $lastUsername = $authenticationUtils->getLastUsername();
-
-        $this->addFlash('info', 'Je kan hier inloggen als klant of medewerker');
-        return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
-    }
-
-    #[Route(path: '/logout', name: 'app_logout')]
-    public function logout(): void
-    {
-        throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
-    }
-
-    #[Route('/customer/dashboard', name: 'app_customer_dashboard')]
+    #[Route('/customer', name: 'app_customer_dashboard')]
     public function dashboard(EntityManagerInterface $entityManager, AfspraakRepository $AR): Response
     {
+        if((!$this->security->isGranted('ROLE_CUSTOMER')) && ($this->security->isGranted('ROLE_EMPLOYEE'))) return $this->redirectToRoute('app_employee_dashboard');
         $this->denyAccessUnlessGranted('ROLE_CUSTOMER');
     
         $temp = $this->getUser()->getAfspraaks();

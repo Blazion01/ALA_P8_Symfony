@@ -75,4 +75,20 @@ class AfspraakRepository extends ServiceEntityRepository
         ;
     }
     */
+
+    public function findMedewerkerAfspraken($value, $var = true): ?array
+    {
+        $qb = $this->createQueryBuilder('a')->where('a.medewerker IS NOT null');
+
+        if($var) {
+            $qb->andWhere('a.medewerker = :val');
+        } else {
+            $qb->andWhere('a.medewerker != :val');
+        }
+
+        return $qb->setParameter('val', $value)
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }

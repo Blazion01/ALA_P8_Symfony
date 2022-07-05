@@ -207,7 +207,7 @@ a:hover {
 }
 
 #admin caption p,
-div.customer.dashboard #afspraken div.show p {
+div.dashboard #afspraken div.show p {
   transform: rotate(180deg) translateY(20px);
   transition-property: transform;
   transition-duration: 2000ms;

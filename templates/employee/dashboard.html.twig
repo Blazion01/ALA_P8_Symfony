@@ -3,20 +3,20 @@
 {% block title %}Medewerker{% endblock %}
 
 {% block body %}
-<div class="employee dashboard">
-  <div id="redirect">
+<div class="employee dashboard" style="text-align: center;">
+  <div id="redirect" style="width: fit-content; margin: 0 auto;">
     <a href="{{path('app_employee_hours')}}">Stel Werkuren Vast</a>
     {% if shifts|length > 0 %}
-    <table>
+    <table style="margin: 0 auto;">
       {% for shift in shifts %}
       <tr>
         {% set dag = shift|slice(0,2)%}
         {% set tijd = shift|slice(3,5) %}
         {% if shift|length == 12 %}
-          {% set tijd = shift|slice(3,8) %}
+        {% set tijd = shift|slice(3,8) %}
         {% endif %}
         {% if shift|length == 11 %}
-          {% set tijd = shift|slice(3,7) %}
+        {% set tijd = shift|slice(3,7) %}
         {% endif %}
         <th>{{dag}}</th>
         <td>{{tijd}}</td>
@@ -24,9 +24,344 @@
       {% endfor %}
     </table>
     {% endif %}
-    
+
+  </div>
+
+  <div id="afspraken">
+    {% set id = 1 %}
+    {% if afspraken.pending|length > 0 %}
+    <div class="show" onclick="change('pending', 'pendingShow')">
+      <h2>Ingeroosterde afspraken: {{afspraken.pending|length}}</h2>
+      <p id="pendingShow"><strong>^</strong></p>
+    </div>
+    <div id="pending" style="display: none;">
+      <!-- pending -->
+      {% for afspraak in afspraken.pending|sort((a, b) => a.time <=> b.time) %}
+        <div class="card"
+          style="background-color: white; width: fit-content; min-width: 100px; text-align: center; display: inline-block; margin: 5px; padding: 5px; border: 2px solid black; border-radius:15px;">
+          <div class="card-body">
+            <p>
+              <strong>{{id}}</strong><br>
+            </p>
+            <hr>
+            <table>
+              <tr>
+                <th>Klant:</th>
+              </tr>
+              <tr>
+                <td>
+                  {{afspraak.klant}}<br>
+                  {{afspraak.email}}
+                </td>
+              </tr>
+              <tr>
+                <th>Tijd</th>
+              </tr>
+              <tr>
+                <td>
+                  {{afspraak.time}}<br>
+                  {{afspraak.timeFromNow}}
+                </td>
+              </tr>
+              <tr>
+                <th>Groep:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.type}}</td>
+              </tr>
+              <tr>
+                <th>Naam</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.naam}}</td>
+              </tr>
+              <tr>
+                <th>Prijs:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.prijs}}</td>
+              </tr>
+              <tr>
+                <th>Status:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.status}}</td>
+              </tr>
+            </table>
+            {% if afspraak.status != "Aanwezig" and afspraak.status != "Gedaan" %}
+            <hr>
+            <form id="aanwezig|{{id}}" style="text-align: center; width: 100%;" action="" method="post">
+              <input type="hidden" name="id" value="{{afspraak.redirectId}}">
+              <input type="hidden" name="aanwezig" value="aanwezig">
+              <input onclick="allow('aanwezig|{{id}}')" type="button" value="Aanwezigheid vaststellen">
+            </form>
+            <form id="removeAfspraak|{{id}}" style="text-align: center; width: 100%;" action="" method="post">
+              <input type="hidden" name="id" value="{{afspraak.redirectId}}">
+              <input type="hidden" name="afzeggen" value="afzeggen">
+              <input onclick="allow('removeAfspraak|{{id}}')" style="background-color: rgb(255, 0, 0);" type="button"
+                value="Afspraak afzeggen">
+            </form>
+            {% endif %}
+            {% if afspraak.status == "Aanwezig" %}
+            <hr>
+            <form id="complete|{{id}}" style="text-align: center; width: 100%;" action="" method="post">
+              <input type="hidden" name="id" value="{{afspraak.redirectId}}">
+              <input type="hidden" name="complete" value="complete">
+              <input onclick="allow('complete|{{id}}')" type="button" value="Afspraak afronden">
+            </form>
+            {% endif %}
+          </div>
+        </div>
+        {% set id = id + 1 %}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% if afspraken.unlinked|length > 0 %}
+    <div class="show" onclick="change('unlinked', 'unlinkedShow')">
+      <h2>Nog in te roosteren afspraken: {{afspraken.unlinked|length}}</h2>
+      <p id="unlinkedShow"><strong>^</strong></p>
+    </div>
+    <div id="unlinked" style="display: none;">
+      <!-- done -->
+      {% for afspraak in afspraken.unlinked|sort((a, b) => a.time <=> b.time) %}
+        <div class="card"
+          style="background-color: white; width: fit-content; min-width: 100px; text-align: center; display: inline-block; margin: 5px; padding: 5px; border: 2px solid black; border-radius:15px;">
+          <div class="card-body">
+            <p>
+              <strong>{{id}}</strong><br>
+            </p>
+            <hr>
+            <table>
+              <tr>
+                <th>Klant:</th>
+              </tr>
+              <tr>
+                <td>
+                  {{afspraak.klant}}<br>
+                  {{afspraak.email}}
+                </td>
+              </tr>
+              <tr>
+                <th>Tijd</th>
+              </tr>
+              <tr>
+                <td>
+                  {{afspraak.time}}<br>
+                  {{afspraak.timeFromNow}}
+                </td>
+              </tr>
+              <tr>
+                <th>Groep:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.type}}</td>
+              </tr>
+              <tr>
+                <th>Naam</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.naam}}</td>
+              </tr>
+              <tr>
+                <th>Prijs:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.prijs}}</td>
+              </tr>
+              <tr>
+                <th>Status:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.status}}</td>
+              </tr>
+            </table>
+            <hr>
+            {% if afspraak.link %}
+            <form style="text-align: center; width: 100%;" action="" method="post">
+              <input type="hidden" name="id" value="{{afspraak.redirectId}}">
+              <input type="submit" name="link" value="Neem afspraak">
+            </form>
+            {% endif %}
+            <form id="removeAfspraak|{{id}}" style="text-align: center; width: 100%;" action="" method="post">
+              <input type="hidden" name="id" value="{{afspraak.redirectId}}">
+              <input type="hidden" name="afzeggen" value="afzeggen">
+              <input onclick="allow('removeAfspraak|{{id}}')" style="background-color: rgb(255, 0, 0);" type="button"
+                value="Afspraak afzeggen">
+            </form>
+          </div>
+        </div>
+        {% set id = id + 1 %}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% if afspraken.done|length > 0 %}
+    <div class="show" onclick="change('done', 'doneShow')">
+      <h2>Geslaagde afspraken: {{afspraken.done|length}}</h2>
+      <p id="doneShow"><strong>^</strong></p>
+    </div>
+    <div id="done" style="display: none;">
+      <!-- done -->
+      {% for afspraak in afspraken.done|sort((a, b) => a.time <=> b.time) %}
+        <div class="card"
+          style="background-color: white; width: fit-content; min-width: 100px; text-align: center; display: inline-block; margin: 5px; padding: 5px; border: 2px solid black; border-radius:15px;">
+          <div class="card-body">
+            <p>
+              <strong>{{id}}</strong><br>
+            </p>
+            <hr>
+            <table>
+              <tr>
+                <th>Klant:</th>
+              </tr>
+              <tr>
+                <td>
+                  {{afspraak.klant}}<br>
+                  {{afspraak.email}}
+                </td>
+              </tr>
+              <tr>
+                <th>Tijd</th>
+              </tr>
+              <tr>
+                <td>
+                  {{afspraak.time}}<br>
+                  {{afspraak.timeFromNow}}
+                </td>
+              </tr>
+              <tr>
+                <th>Groep:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.type}}</td>
+              </tr>
+              <tr>
+                <th>Naam</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.naam}}</td>
+              </tr>
+              <tr>
+                <th>Prijs:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.prijs}}</td>
+              </tr>
+              <tr>
+                <th>Status:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.status}}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        {% set id = id + 1 %}
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% if afspraken.rejected|length > 0 %}
+    <div class="show" onclick="change('rejected', 'rejectedShow')">
+      <h2>Afgekeurde afspraken: {{afspraken.rejected|length}}</h2>
+      <p id="rejectedShow"><strong>^</strong></p>
+    </div>
+    <div id="rejected" style="display: none;">
+      <!-- rejected -->
+      {% for afspraak in afspraken.rejected|sort((a, b) => a.time <=> b.time) %}
+        <div class="card"
+          style="background-color: white; width: fit-content; min-width: 100px; text-align: center; display: inline-block; margin: 5px; padding: 5px; border: 2px solid black; border-radius:15px;">
+          <div class="card-body">
+            <p>
+              <strong>{{id}}</strong><br>
+            </p>
+            <hr>
+            <table>
+              <tr>
+                <th>Klant:</th>
+              </tr>
+              <tr>
+                <td>
+                  {{afspraak.klant}}<br>
+                  {{afspraak.email}}
+                </td>
+              </tr>
+              <tr>
+                <th>Tijd</th>
+              </tr>
+              <tr>
+                <td>
+                  {{afspraak.time}}<br>
+                  {{afspraak.timeFromNow}}
+                </td>
+              </tr>
+              <tr>
+                <th>Groep:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.type}}</td>
+              </tr>
+              <tr>
+                <th>Naam</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.naam}}</td>
+              </tr>
+              <tr>
+                <th>Prijs:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.prijs}}</td>
+              </tr>
+              <tr>
+                <th>Status:</th>
+              </tr>
+              <tr>
+                <td>{{afspraak.status}}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        {% set id = id + 1 %}
+        {% endfor %}
+    </div>
+    {% endif %}
   </div>
 </div>
 {% block admin %}
 {% endblock %}
+{% endblock %}
+
+{% block javascripts %}
+<script>
+  const change = (id, idTwo) => {
+    let tbl = document.getElementById(id);
+    var tblc = document.getElementById(idTwo);
+    if (tbl.style.display == "none") {
+      tbl.style.display = "block";
+      tblc.style.transform = "rotate(0deg) translateY(-20px)";
+    } else {
+      tbl.style.display = "none";
+      tblc.style.transform = "rotate(180deg) translateY(20px)";
+    }
+  }
+
+  const allow = formId => {
+    switch (formId.split('|')[0]) {
+      case 'removeAfspraak':
+        if (confirm('Weet je zeker dat je deze afspraak wil afzeggen?')) {
+          document.getElementById(formId).submit();
+        }
+        break;
+      case 'complete':
+        if (confirm('Weet je zeker dat deze afspraak afgerond is?')) {
+          document.getElementById(formId).submit();
+        }
+        break;
+      case 'aanwezig':
+        if (confirm('Weet je zeker dat de klant die bij deze afspraak hoort er is?')) {
+          document.getElementById(formId).submit();
+        }
+        break;
+    }
+  }
+</script>
 {% endblock %}

@@ -11,7 +11,7 @@
     </div>
     <div id="pending" style="display: none;">
       <!-- pending -->
-      {% for afspraak in afspraken.pending %}
+      {% for afspraak in afspraken.pending|sort((a, b) => a.time <=> b.time) %}
       <div class="card" style="background-color: white; width: fit-content; min-width: 100px; text-align: center; display: inline-block; margin: 5px; padding: 5px; border: 2px solid black; border-radius:15px;">
         <div class="card-body">
           <p>
@@ -67,7 +67,7 @@
     </div>
     <div id="done" style="display: none;">
       <!-- done -->
-      {% for afspraak in afspraken.done %}
+      {% for afspraak in afspraken.done|sort((a, b) => a.time <=> b.time) %}
       <div class="card" style="background-color: white; width: fit-content; min-width: 100px; text-align: center; display: inline-block; margin: 5px; padding: 5px; border: 2px solid black; border-radius:15px;">
         <div class="card-body">
           <p>
@@ -123,7 +123,7 @@
       </div>
       <div id="rejected" style="display: none;">
         <!-- rejected -->
-        {% for afspraak in afspraken.rejected %}
+        {% for afspraak in afspraken.rejected|sort((a, b) => a.time <=> b.time) %}
       <div class="card" style="background-color: white; width: fit-content; min-width: 100px; text-align: center; display: inline-block; margin: 5px; padding: 5px; border: 2px solid black; border-radius:15px;">
         <div class="card-body">
           <p>
